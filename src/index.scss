@@ -1,0 +1,63 @@
+
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    background: #f9fbfd;
+    color: #333;
+    font-family: "Microsoft Yahei", Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+[v-cloak] {
+    display: none !important;
+}
+
+.total-container {
+    position: relative;
+    height: 100%;
+}
+
+// painting
+.painting-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.drop-box {
+    width: 40%;
+    height: 30%;
+    border: 3px dashed #ccc;
+    box-sizing: border-box;
+    min-width: 200px;
+    min-height: 125px;
+    max-width: 400px;
+    max-height: 250px;
+
+    &.-active {
+        border-color: #f56161;
+    }
+}
+
+
+// panel
+.panel-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 100;
+}
+
+.image-adjust-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background: #fff;
+    mix-blend-mode: saturation;
+}

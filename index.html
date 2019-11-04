@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Painting Color Advisor</title>
+</head>
+<body>
+    <section class="total-container" data-total-container v-cloak>
+        <div class="painting-container">
+            <div 
+            class="drop-box"
+            v-bind:class="dropBoxClass"
+            v-on:dragover.stop.prevent
+            v-on:dragenter.stop.prevent="handleDragEnter" 
+            v-on:dragleave.stop.prevent="handleDragLeave" 
+            v-on:drop.stop.prevent="handleDrop"></div>
+        </div>
+        <div class="panel-container">
+            <img v-bind:src="imageSrc" alt="">
+        </div>
+    </section>
+
+    <script src="src/index.ts"></script>
+</body>
+</html>

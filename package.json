@@ -1,0 +1,20 @@
+{
+  "name": "painting_color_advisor",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "author": "liangzhu",
+  "license": "MIT",
+  "devDependencies": {
+    "sass": "^1.23.0",
+    "typescript": "^3.6.4"
+  },
+  "dependencies": {
+    "vue": "^2.6.10"
+  },
+  "alias": {
+    "vue": "./node_modules/vue/dist/vue.common.js"
+  }
+}
