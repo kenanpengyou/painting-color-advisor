@@ -8,17 +8,27 @@
 </head>
 <body>
     <section class="total-container" data-total-container v-cloak>
-        <div class="painting-container">
+        <div class="painting-container" ref="paintingContainer" v-bind:class="painting.classObject">
+            <div
+                v-show="!imageReady"
+                class="drop-box"
+                v-bind:class="dropBoxClass"
+                v-on:dragover.stop.prevent
+                v-on:dragenter.stop.prevent="handleDragEnter" 
+                v-on:dragleave.stop.prevent="handleDragLeave" 
+                v-on:drop.stop.prevent="handleDrop"
+                >
+                <em class="box-note">Ctrl + V 粘贴图片</em>
+            </div>
             <div 
-            class="drop-box"
-            v-bind:class="dropBoxClass"
-            v-on:dragover.stop.prevent
-            v-on:dragenter.stop.prevent="handleDragEnter" 
-            v-on:dragleave.stop.prevent="handleDragLeave" 
-            v-on:drop.stop.prevent="handleDrop"></div>
+                v-show="imageReady" 
+                class="canvas-container"
+                v-bind:style="canvasContainerStyle"
+                >
+                <canvas ref="imageCanvas" class="canvas-element"></canvas>
+            </div>
         </div>
         <div class="panel-container">
-            <img v-bind:src="imageSrc" alt="">
         </div>
     </section>
 

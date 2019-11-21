@@ -18,17 +18,27 @@ body {
 
 .total-container {
     position: relative;
-    height: 100%;
+    height: 100%; 
 }
 
 // painting
 .painting-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
     height: 100%;
+    overflow: auto;
+
+    &.-centered {
+        justify-content: center;
+        align-items: center;
+    }
+    &.-grab {
+        cursor: grab;
+    }
 }
 .drop-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 40%;
     height: 30%;
     border: 3px dashed #ccc;
@@ -41,6 +51,21 @@ body {
     &.-active {
         border-color: #f56161;
     }
+}
+.box-note {
+    color: #777;
+    font-size: 14px;
+    font-style: normal;
+    cursor: default;
+}
+.canvas-container {
+    flex: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.canvas-element {
+    display: block;
 }
 
 
