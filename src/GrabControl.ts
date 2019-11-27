@@ -1,0 +1,105 @@
+
+/*------------------------------------------------------------------------*\
+
+  # classes
+
+\*------------------------------------------------------------------------*/
+
+class GrabControl {
+    
+    private x: number = 0;
+    private y: number = 0;
+    private totalVm: any;
+    private grabMode: string = "off";
+    private isGrabbing: boolean = false;
+    private boundMousedownHandler: EventListener;
+    private boundMouseupHandler: EventListener;
+    private boundMousemoveHandler: EventListener;
+
+    public constructor (viewModel: any) {
+        this.totalVm = viewModel;
+        this.boundMousedownHandler = (e: MouseEvent) => this.mousedownHandler(e);
+        this.boundMouseupHandler = (e: MouseEvent) => this.mouseupHandler(e);
+        this.boundMousemoveHandler = (e: MouseEvent) => this.mousemoveHandler(e);
+    }
+
+    public bindEvents () {
+        document.addEventListener("keydown", (e: KeyboardEvent) => {
+
+            // key "space"
+            if (e.keyCode === 32) {
+                e.preventDefault();
+                this.toggleGrabMode("on");
+            }
+        }, false);
+        document.addEventListener("keyup", (e: KeyboardEvent) => {
+
+            if (e.keyCode === 32) {
+                e.preventDefault();
+                this.toggleGrabMode("off");
+            }
+        }, false);
+    }
+
+    private mousedownHandler (e: MouseEvent) {
+        this.x = e.clientX;
+        this.y = e.clientY;
+        this.isGrabbing = true;
+    }
+
+    private mouseupHandler (e: MouseEvent) {
+        this.x = 0;
+        this.y = 0;
+        this.isGrabbing = false;
+    }
+
+    private mousemoveHandler (e: MouseEvent) {
+
+        if (this.isGrabbing) {
+            let dx = e.clientX - this.x;
+            let dy = e.clientY - this.y;
+
+            this.totalVm.$refs.paintingContainer.scrollLeft -= dx;
+            this.totalVm.$refs.paintingContainer.scrollTop -= dy;
+
+            this.x = e.clientX;
+            this.y = e.clientY;
+        }
+    }
+
+    private toggleGrabMode (nextMode: string): void {
+
+        if (nextMode !== this.grabMode) {
+            this.grabMode = nextMode;
+
+            switch (nextMode) {
+                case "on": {
+                    this.totalVm.painting.classObject["-grab"] = true;
+                    this.totalVm.painting.mode = "grab";
+                    document.addEventListener("mousedown", this.boundMousedownHandler, false);
+                    document.addEventListener("mouseup", this.boundMouseupHandler, false);
+                    document.addEventListener("mousemove", this.boundMousemoveHandler, false);
+                    break;
+                }
+            
+                case "off":
+                default: {
+                    this.totalVm.painting.classObject["-grab"] = false;
+                    this.totalVm.painting.mode = "normal";
+                    document.removeEventListener("mousedown", this.boundMousedownHandler, false);
+                    document.removeEventListener("mouseup", this.boundMouseupHandler, false);
+                    document.removeEventListener("mousemove", this.boundMousemoveHandler, false);
+                }
+            }
+        }
+    }
+
+}
+
+/*------------------------------------------------------------------------*\
+
+  # export
+
+\*------------------------------------------------------------------------*/
+
+export default GrabControl;

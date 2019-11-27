@@ -3,9 +3,11 @@ let throttle: Function = function (type: string, name: string, obj: HTMLElement 
     obj = obj || window;
     let running: boolean = false;
     let func: EventListener = function () {
-        if (running) { return; }
+        if (running) {
+            return;
+        }
         running = true;
-        requestAnimationFrame(function() {
+        requestAnimationFrame(function () {
             obj.dispatchEvent(new CustomEvent(name));
             running = false;
         });

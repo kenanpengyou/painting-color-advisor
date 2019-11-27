@@ -2,6 +2,7 @@ import "./index.scss";
 
 import Vue from "vue";
 import helper from "./helper";
+import GrabControl from "./GrabControl";
 
 // base config for this application
 const baseConfig = {
@@ -9,6 +10,7 @@ const baseConfig = {
 };
 
 let paintingCtx: CanvasRenderingContext2D;
+let grabControl: GrabControl;
 
 let totalVm: any = new Vue({
     el: "[data-total-container]",
@@ -53,7 +55,7 @@ let totalVm: any = new Vue({
 });
 
 function bindEvents (flag: string): void {
-
+    
     switch (flag) {
 
         // when the image has been loaded to canvas
@@ -61,30 +63,18 @@ function bindEvents (flag: string): void {
             helper.throttle("resize", "optimizedResize", window);
 
             window.addEventListener("optimizedResize", () => {
-                console.log("[optimizedResize]");
                 adjustPaintingArea();
             }, false);
-            document.addEventListener("keydown", (e: KeyboardEvent) => {
 
-                // key "space"
-                if (e.keyCode === 32) {
-                    e.preventDefault();
-                    toggleGrabMode("on");
-                }
-            }, false);
-            document.addEventListener("keyup", (e: KeyboardEvent) => {
-
-                if (e.keyCode === 32) {
-                    e.preventDefault();
-                    toggleGrabMode("off");
-                }
-            }, false);
+            grabControl = new GrabControl(totalVm);
+            grabControl.bindEvents();
+        
             break;
         }
 
         case "init":
         default: {
-            document.addEventListener("paste", (e: ClipboardEvent) => {
+            document.addEventListener("paste", function pasteEventHandler (e: ClipboardEvent) {
                 e.preventDefault();
                 let clipboardData: DataTransfer = e.clipboardData;
             
@@ -98,6 +88,9 @@ function bindEvents (flag: string): void {
             
                             if (item.type.includes("image")) {
                                 let blob: Blob = item.getAsFile();
+
+                                // remove event listener of "paste" after finding a image
+                                document.removeEventListener("paste", pasteEventHandler, false);
                                 return loadImageBlobToCanvas(blob);
                             }
                         }
@@ -144,7 +137,6 @@ function adjustPaintingArea (): void {
             width: `${properContainerWidth}px`,
             height: `${properContainerHeight}px`
         };
-        // console.log("[adjustPaintingArea]properContainerWidth = ", properContainerWidth);
 
         totalVm.$nextTick(function () {
             this.$refs.paintingContainer.scrollLeft = (properContainerWidth - viewportWidth) / 2;
@@ -154,30 +146,5 @@ function adjustPaintingArea (): void {
     } else {
         totalVm.painting.classObject["-centered"] = true;
         totalVm.canvasContainerStyle = {};
-    }
-}
-
-function toggleGrabMode (direction: string): void {
-
-    switch (direction) {
-        case "on": {
-            totalVm.painting.classObject["-grab"] = true;
-            totalVm.painting.mode = "grab";
-
-            document.addEventListener("mouse", (e: KeyboardEvent) => {
-
-                if (e.keyCode === 32) {
-                    e.preventDefault();
-                    toggleGrabMode("off");
-                }
-            }, false);
-            break;
-        }
-
-        case "off":
-        default: {
-            totalVm.painting.classObject["-grab"] = false;
-            totalVm.painting.mode = "normal";
-        }   
     }
 }
