@@ -59,6 +59,7 @@ body {
     cursor: default;
 }
 .canvas-container {
+    position: relative;
     flex: none;
     display: flex;
     justify-content: center;
@@ -67,17 +68,7 @@ body {
 .canvas-element {
     display: block;
 }
-
-
-// panel
-.panel-container {
-    position: absolute;
-    left: 0;
-    top: 0;
-    z-index: 100;
-}
-
-.image-adjust-layer {
+.luma-adjust-layer {
     position: absolute;
     left: 0;
     top: 0;
@@ -85,4 +76,88 @@ body {
     right: 0;
     background: #fff;
     mix-blend-mode: saturation;
+}
+
+
+// panel
+$scroll-bar-width: 17px;
+$panel-radius: 4px;
+$magnifier-panel-left: 10px;
+$magnifier-panel-top: 10px;
+$switch-panel-left: 10px;
+$switch-panel-bottom: 10px;
+.panel-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 100;
+    pointer-events: none;
+}
+.switch-panel {
+    position: absolute;
+    display: flex;
+    left: $switch-panel-left;
+    bottom: $switch-panel-bottom;
+    pointer-events: auto;
+
+    &.-scrollOffset {
+        bottom: $switch-panel-bottom + $scroll-bar-width;
+    }
+}
+.switcher {
+    background: #fff;
+    border: 2px solid #666;
+    border-radius: $panel-radius;
+    opacity: .6;
+    cursor: pointer;
+    
+    &:hover {
+        opacity: .8;
+    }
+    &.-luma::before {
+        display: block;
+        width: 32px;
+        height: 32px;
+        background: url(./icons/luma.svg) 0 no-repeat / contain;
+        content: "";
+    }
+    &.-active {
+        opacity: 1;
+    }
+}
+.magnifier-panel {
+    position: absolute;
+    padding: 5px;
+    background: rgba(#333, .8);
+    border-radius: $panel-radius;
+    left: $magnifier-panel-left;
+    top: $magnifier-panel-top;
+    pointer-events: auto;
+
+    .view-area {
+        width: 100px;
+        height: 100px;
+        border: 1px solid #acacac;
+        background: #fff;
+    }
+    .color-display {
+        display: flex;
+        align-items: center;
+        padding: 5px 0 0 0;
+    }
+    .color-box {
+        width: 22px;
+        height: 22px;
+        padding: 1px;
+        border: 1px solid #acacac;
+        background-clip: content-box;
+        margin-right: 10px;
+    }
+    .color-text {
+        flex: 1;
+        color: #fff;
+        font-size: 14px;
+    }
 }

@@ -23,6 +23,8 @@ let totalVm: any = new Vue({
             },
             mode: "normal"
         },
+        colorOfCursor: "#ffffff",
+        lumaAdjust: false,
         canvasContainerStyle: {},
         dropBoxClass: {
             "-active": false
@@ -32,7 +34,21 @@ let totalVm: any = new Vue({
         paintingCtx = this.$refs.imageCanvas.getContext("2d");
         bindEvents("init");
     },
+    computed: {
+        colorBoxStyle () {
+            return {
+                backgroundColor: this.colorOfCursor
+            };
+        }
+    },
     methods: {
+        switchDisplay (type: string) {
+            switch (type) {
+                case "luma":
+                default:
+                    this.lumaAdjust = !this.lumaAdjust;
+            }
+        },
         handleDragEnter () {
             this.dropBoxClass["-active"] = true;
         },
@@ -68,7 +84,7 @@ function bindEvents (flag: string): void {
 
             grabControl = new GrabControl(totalVm);
             grabControl.bindEvents();
-        
+
             break;
         }
 

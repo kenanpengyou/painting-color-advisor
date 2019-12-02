@@ -20,15 +20,41 @@
                 >
                 <em class="box-note">Ctrl + V 粘贴图片</em>
             </div>
-            <div 
+            <div
                 v-show="imageReady" 
                 class="canvas-container"
                 v-bind:style="canvasContainerStyle"
                 >
-                <canvas ref="imageCanvas" class="canvas-element"></canvas>
+                <canvas 
+                    ref="imageCanvas" 
+                    class="canvas-element"
+                    >
+                </canvas>
+                <div v-show="lumaAdjust" class="luma-adjust-layer"></div>
             </div>
         </div>
-        <div class="panel-container">
+        <div 
+            v-show="imageReady"
+            class="panel-container"
+            >
+            <div class="magnifier-panel">
+                <div class="view-area"></div>
+                <div class="color-display">
+                    <div class="color-box" v-bind:style="colorBoxStyle"></div>
+                    <div class="color-text">{{ colorOfCursor }}</div>
+                </div>
+            </div>
+            <div 
+                class="switch-panel"
+                v-bind:class="painting.classObject['-centered'] ? '' : '-scrollOffset'"
+                >
+                <div 
+                    class="switcher -luma" 
+                    v-bind:class="lumaAdjust ? '-active' : ''" 
+                    v-on:click="switchDisplay('luma')"
+                    title="切换素描关系明度显示"
+                ></div>
+            </div>
         </div>
     </section>
 
