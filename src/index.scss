@@ -82,8 +82,8 @@ body {
 // panel
 $scroll-bar-width: 17px;
 $panel-radius: 4px;
-$magnifier-panel-left: 10px;
-$magnifier-panel-top: 10px;
+$magnifier-panel-offset-x: 10px;
+$magnifier-panel-offset-y: 10px;
 $switch-panel-left: 10px;
 $switch-panel-bottom: 10px;
 .panel-container {
@@ -132,15 +132,33 @@ $switch-panel-bottom: 10px;
     padding: 5px;
     background: rgba(#333, .8);
     border-radius: $panel-radius;
-    left: $magnifier-panel-left;
-    top: $magnifier-panel-top;
+    left: $magnifier-panel-offset-x;
+    top: $magnifier-panel-offset-y;
     pointer-events: auto;
 
+    &.-right-bottom {
+        left: auto;
+        top: auto;
+        right: $magnifier-panel-offset-x;
+        bottom: $magnifier-panel-offset-y;
+    }
+
     .view-area {
+        position: relative;
         width: 100px;
         height: 100px;
         border: 1px solid #acacac;
         background: #fff;
+    }
+    .picker-indicator {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        box-sizing: border-box;
+        border: 1px solid #99d9ea;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
     }
     .color-display {
         display: flex;

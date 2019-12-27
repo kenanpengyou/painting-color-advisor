@@ -1,16 +1,24 @@
 import "./index.scss";
 
 import Vue from "vue";
+import eventBus from "./eventBus";
 import helper from "./helper";
 import GrabControl from "./GrabControl";
+import PickerControl from "./PickerControl";
 
 // base config for this application
 const baseConfig = {
-    edgeReserve: 100
+    edgeReserve: 100,
+
+    // pixel scale of the magnifier
+    magnifierPixelScale: 4,
+    magnifierCanvasSize: 100
 };
 
 let paintingCtx: CanvasRenderingContext2D;
+let magnifierCtx: CanvasRenderingContext2D;
 let grabControl: GrabControl;
+let pickerControl: PickerControl;
 
 let totalVm: any = new Vue({
     el: "[data-total-container]",
@@ -23,30 +31,111 @@ let totalVm: any = new Vue({
             },
             mode: "normal"
         },
-        colorOfCursor: "#ffffff",
+        colorOfPicker: "#ffffff",
         lumaAdjust: false,
+        magnifierRightBottom: false,
         canvasContainerStyle: {},
+        canvasClientRect: {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0
+        },
         dropBoxClass: {
             "-active": false
         }
     },
     mounted () {
         paintingCtx = this.$refs.imageCanvas.getContext("2d");
+        magnifierCtx = this.$refs.magnifierCanvas.getContext("2d");
+
         bindEvents("init");
+        eventBus.$on("painting:grab", (mode: string) => {
+            this.changeGrabMode(mode);
+        });
+        eventBus.$on("painting:move", (e: any) => {
+            this.movePainting(e.dx, e.dy);
+        });
+        eventBus.$on("picker:move", (e: any) => {
+            this.movePicker(e.clientX, e.clientY);
+        });
     },
     computed: {
         colorBoxStyle () {
             return {
-                backgroundColor: this.colorOfCursor
+                backgroundColor: this.colorOfPicker
             };
         }
     },
     methods: {
+        handleMagnifierEnter (e: MouseEvent) {
+            this.magnifierRightBottom = !this.magnifierRightBottom;
+        },
         switchDisplay (type: string) {
             switch (type) {
                 case "luma":
                 default:
                     this.lumaAdjust = !this.lumaAdjust;
+            }
+        },
+        refreshPickerStatus (relativeX: number, relativeY: number) {
+
+            // edge check
+            if (relativeX < 0) {
+                relativeX = 0;
+            } else if (relativeX >= this.canvasClientRect.width) {
+                relativeX = this.canvasClientRect.width - 1;
+            }
+
+            if (relativeY < 0) {
+                relativeY = 0;
+            } else if (relativeY >= this.canvasClientRect.height) {
+                relativeY = this.canvasClientRect.height - 1;
+            }
+
+            let pixelData: Uint8ClampedArray;
+            let pixelSize = baseConfig.magnifierCanvasSize / baseConfig.magnifierPixelScale;
+            let pixelAmplitude: number = Math.floor((pixelSize - 1) / 2);
+            let startX: number = relativeX - pixelAmplitude;
+            let startY: number = relativeY - pixelAmplitude;
+
+            pixelData = paintingCtx.getImageData(relativeX, relativeY, 1, 1).data;
+            this.colorOfPicker = rgb2hex(pixelData[0], pixelData[1], pixelData[2]);
+
+            // disable smooth for pixel scale
+            magnifierCtx.imageSmoothingEnabled = false;
+            // magnifierCtx.mozImageSmoothingEnabled  = false;
+            // magnifierCtx.webkitImageSmoothingEnabled  = false;
+            // magnifierCtx.msImageSmoothingEnabled  = false;
+
+            magnifierCtx.clearRect(0, 0, baseConfig.magnifierCanvasSize, baseConfig.magnifierCanvasSize);
+            magnifierCtx.drawImage(this.$refs.imageCanvas, startX, startY, pixelSize, pixelSize, 
+                0, 0, baseConfig.magnifierCanvasSize, baseConfig.magnifierCanvasSize);
+        },
+        movePicker (clientX: number, clientY: number) {
+            let relativeX: number = clientX + this.$refs.paintingContainer.scrollLeft - this.canvasClientRect.x;
+            let relativeY: number = clientY + this.$refs.paintingContainer.scrollTop - this.canvasClientRect.y;
+
+            if (relativeX >= 0 && relativeX <= this.canvasClientRect.width || 
+                relativeY >= 0 && relativeY <= this.canvasClientRect.height) {
+                this.refreshPickerStatus(relativeX, relativeY);
+            }
+        },
+        movePainting (dx: number, dy: number) {
+            this.$refs.paintingContainer.scrollLeft -= dx;
+            this.$refs.paintingContainer.scrollTop -= dy;
+        },
+        changeGrabMode (mode: string) {
+            switch (mode) {
+                case "on": 
+                    this.painting.classObject["-grab"] = true;
+                    this.painting.mode = "grab";
+                    break;
+                
+                case "off":
+                default: 
+                    this.painting.classObject["-grab"] = false;
+                    this.painting.mode = "normal";
             }
         },
         handleDragEnter () {
@@ -82,8 +171,11 @@ function bindEvents (flag: string): void {
                 adjustPaintingArea();
             }, false);
 
-            grabControl = new GrabControl(totalVm);
+            grabControl = new GrabControl();
             grabControl.bindEvents();
+            
+            pickerControl = new PickerControl();
+            pickerControl.bindEvents();
 
             break;
         }
@@ -128,12 +220,30 @@ function loadImageBlobToCanvas (imageBlob: Blob): void {
             totalVm.$refs.imageCanvas.height = image.height;
             totalVm.imageReady = true;
             paintingCtx.drawImage(image, 0, 0);
+            totalVm.$refs.magnifierCanvas.width = baseConfig.magnifierCanvasSize;
+            totalVm.$refs.magnifierCanvas.height = baseConfig.magnifierCanvasSize;
             bindEvents("imageReady");
             adjustPaintingArea();
         };
 
         image.src = url;
     }
+}
+
+// r, g, b should be "int"
+function rgb2hex(r: any, g: any, b: any) {
+    r = r.toString(16);
+    g = g.toString(16);
+    b = b.toString(16);
+
+    if (r.length == 1)
+        r = "0" + r;
+    if (g.length == 1)
+        g = "0" + g;
+    if (b.length == 1)
+        b = "0" + b;
+
+    return "#" + r + g + b;
 }
 
 function adjustPaintingArea (): void {
@@ -153,6 +263,12 @@ function adjustPaintingArea (): void {
             width: `${properContainerWidth}px`,
             height: `${properContainerHeight}px`
         };
+        totalVm.canvasClientRect = {
+            width: canvasWidth, 
+            height: canvasHeight,
+            x: (properContainerWidth - canvasWidth) / 2,
+            y: (properContainerHeight - canvasHeight) / 2
+        };
 
         totalVm.$nextTick(function () {
             this.$refs.paintingContainer.scrollLeft = (properContainerWidth - viewportWidth) / 2;
@@ -162,5 +278,11 @@ function adjustPaintingArea (): void {
     } else {
         totalVm.painting.classObject["-centered"] = true;
         totalVm.canvasContainerStyle = {};
+        totalVm.canvasClientRect = {
+            width: canvasWidth, 
+            height: canvasHeight,
+            x: (viewportWidth - canvasWidth) / 2,
+            y: (viewportHeight - canvasHeight) / 2
+        };
     }
 }

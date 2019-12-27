@@ -21,7 +21,7 @@
                 <em class="box-note">Ctrl + V 粘贴图片</em>
             </div>
             <div
-                v-show="imageReady" 
+                v-show="imageReady"
                 class="canvas-container"
                 v-bind:style="canvasContainerStyle"
                 >
@@ -37,11 +37,21 @@
             v-show="imageReady"
             class="panel-container"
             >
-            <div class="magnifier-panel">
-                <div class="view-area"></div>
+            <div 
+                v-on:mouseenter="handleMagnifierEnter"
+                v-bind:class="magnifierRightBottom ? '-right-bottom' : ''"
+                class="magnifier-panel">
+                <div class="view-area">
+                    <canvas
+                        ref="magnifierCanvas"
+                        class="canvas-magnifier"
+                    >
+                    </canvas>
+                    <div class="picker-indicator"></div>
+                </div>
                 <div class="color-display">
                     <div class="color-box" v-bind:style="colorBoxStyle"></div>
-                    <div class="color-text">{{ colorOfCursor }}</div>
+                    <div class="color-text">{{ colorOfPicker }}</div>
                 </div>
             </div>
             <div 

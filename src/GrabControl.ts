@@ -1,3 +1,4 @@
+import eventBus from "./eventBus";
 
 /*------------------------------------------------------------------------*\
 
@@ -9,15 +10,15 @@ class GrabControl {
     
     private x: number = 0;
     private y: number = 0;
-    private totalVm: any;
+    private eventBus: any;
     private grabMode: string = "off";
     private isGrabbing: boolean = false;
     private boundMousedownHandler: EventListener;
     private boundMouseupHandler: EventListener;
     private boundMousemoveHandler: EventListener;
 
-    public constructor (viewModel: any) {
-        this.totalVm = viewModel;
+    public constructor () {
+        this.eventBus = eventBus;
         this.boundMousedownHandler = (e: MouseEvent) => this.mousedownHandler(e);
         this.boundMouseupHandler = (e: MouseEvent) => this.mouseupHandler(e);
         this.boundMousemoveHandler = (e: MouseEvent) => this.mousemoveHandler(e);
@@ -59,8 +60,9 @@ class GrabControl {
             let dx = e.clientX - this.x;
             let dy = e.clientY - this.y;
 
-            this.totalVm.$refs.paintingContainer.scrollLeft -= dx;
-            this.totalVm.$refs.paintingContainer.scrollTop -= dy;
+            this.eventBus.$emit("painting:move", {
+                dx, dy
+            });
 
             this.x = e.clientX;
             this.y = e.clientY;
@@ -71,11 +73,10 @@ class GrabControl {
 
         if (nextMode !== this.grabMode) {
             this.grabMode = nextMode;
+            this.eventBus.$emit("painting:grab", nextMode);
 
             switch (nextMode) {
                 case "on": {
-                    this.totalVm.painting.classObject["-grab"] = true;
-                    this.totalVm.painting.mode = "grab";
                     document.addEventListener("mousedown", this.boundMousedownHandler, false);
                     document.addEventListener("mouseup", this.boundMouseupHandler, false);
                     document.addEventListener("mousemove", this.boundMousemoveHandler, false);
@@ -84,8 +85,6 @@ class GrabControl {
             
                 case "off":
                 default: {
-                    this.totalVm.painting.classObject["-grab"] = false;
-                    this.totalVm.painting.mode = "normal";
                     document.removeEventListener("mousedown", this.boundMousedownHandler, false);
                     document.removeEventListener("mouseup", this.boundMouseupHandler, false);
                     document.removeEventListener("mousemove", this.boundMousemoveHandler, false);
