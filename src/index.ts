@@ -1,6 +1,7 @@
 import "./index.scss";
 
 import Vue from "vue";
+import {hex as contrastHex} from "wcag-contrast";
 import eventBus from "./eventBus";
 import helper from "./helper";
 import GrabControl from "./GrabControl";
@@ -12,7 +13,10 @@ const baseConfig = {
 
     // pixel scale of the magnifier
     magnifierPixelScale: 4,
-    magnifierCanvasSize: 100
+    magnifierCanvasSize: 100,
+
+    indicatorColor1: "#1ee",
+    indicatorColor2: "#f00"
 };
 
 let paintingCtx: CanvasRenderingContext2D;
@@ -32,6 +36,7 @@ let totalVm: any = new Vue({
             mode: "normal"
         },
         colorOfPicker: "#ffffff",
+        indicatorInverted: false,
         lumaAdjust: false,
         magnifierRightBottom: false,
         canvasContainerStyle: {},
@@ -102,6 +107,10 @@ let totalVm: any = new Vue({
             pixelData = paintingCtx.getImageData(relativeX, relativeY, 1, 1).data;
             this.colorOfPicker = rgb2hex(pixelData[0], pixelData[1], pixelData[2]);
 
+            // update indicator color for proper contrast (below "AA")
+            let contrastNumber = contrastHex(this.colorOfPicker, baseConfig.indicatorColor1);
+            this.indicatorInverted = contrastNumber < 4.5;
+
             // disable smooth for pixel scale
             magnifierCtx.imageSmoothingEnabled = false;
             // magnifierCtx.mozImageSmoothingEnabled  = false;
@@ -116,8 +125,7 @@ let totalVm: any = new Vue({
             let relativeX: number = clientX + this.$refs.paintingContainer.scrollLeft - this.canvasClientRect.x;
             let relativeY: number = clientY + this.$refs.paintingContainer.scrollTop - this.canvasClientRect.y;
 
-            if (relativeX >= 0 && relativeX <= this.canvasClientRect.width || 
-                relativeY >= 0 && relativeY <= this.canvasClientRect.height) {
+            if (!this.lumaAdjust) {
                 this.refreshPickerStatus(relativeX, relativeY);
             }
         },

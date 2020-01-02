@@ -38,6 +38,7 @@
             class="panel-container"
             >
             <div 
+                v-show="!lumaAdjust"
                 v-on:mouseenter="handleMagnifierEnter"
                 v-bind:class="magnifierRightBottom ? '-right-bottom' : ''"
                 class="magnifier-panel">
@@ -47,7 +48,11 @@
                         class="canvas-magnifier"
                     >
                     </canvas>
-                    <div class="picker-indicator"></div>
+                    <div 
+                        v-bind:class="indicatorInverted ? '-theme-b' : ''"
+                        class="picker-indicator"
+                    >
+                    </div>
                 </div>
                 <div class="color-display">
                     <div class="color-box" v-bind:style="colorBoxStyle"></div>

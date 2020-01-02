@@ -67,6 +67,10 @@ body {
 }
 .canvas-element {
     display: block;
+
+    .painting-container:not(.-grab) & {
+        cursor: url(icons/picker.png) 8 23, auto;
+    }
 }
 .luma-adjust-layer {
     position: absolute;
@@ -150,15 +154,23 @@ $switch-panel-bottom: 10px;
         border: 1px solid #acacac;
         background: #fff;
     }
+
+    $indicator-color-1: #1ee;
+    $indicator-color-2: #f00;
+
     .picker-indicator {
         position: absolute;
         width: 4px;
         height: 4px;
         box-sizing: border-box;
-        border: 1px solid #99d9ea;
+        border: 1px solid $indicator-color-1;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
+
+        &.-theme-b {
+            border-color: $indicator-color-2;
+        }
     }
     .color-display {
         display: flex;
