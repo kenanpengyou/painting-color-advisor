@@ -14,10 +14,12 @@ class PickerControl {
     public constructor () {
         this.eventBus = eventBus;
         this.boundMousemoveHandler = (e: MouseEvent) => this.mousemoveHandler(e);
+        this.boundMouseupHandler = (e: MouseEvent) => this.mouseupHandler(e);
     }
 
     public bindEvents () {
         document.addEventListener("mousemove", this.boundMousemoveHandler, false);
+        document.addEventListener("mousemove", this.boundMouseupHandler, false);
     }
 
     private mousemoveHandler (e: MouseEvent) {
@@ -26,6 +28,13 @@ class PickerControl {
           clientY: e.clientY
         });
     }
+
+    private mouseupHandler (e: MouseEvent) {
+      this.eventBus.$emit("picker:choose", {
+        clientX: e.clientX,
+        clientY: e.clientY
+      });
+  }
 }
 
 /*------------------------------------------------------------------------*\

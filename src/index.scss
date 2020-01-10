@@ -72,6 +72,47 @@ body {
         cursor: url(icons/picker.png) 8 23, auto;
     }
 }
+.picker-target-mark {
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    $mark-length-1: 10px;
+    $mark-length-2: 1px;
+    $mark-offset-1: 3px;
+    $mark-offset-2: 5px;
+
+    &::before {
+        position: absolute;
+        width: $mark-length-1;
+        height: $mark-length-2;
+        box-shadow: 
+        (-$mark-length-1 - $mark-offset-1) (-1px - $mark-offset-2) #000, 
+        (-$mark-length-1 - $mark-offset-1) (0 - $mark-offset-2) #fff, 
+        (-$mark-length-1 - $mark-offset-1) (1px - $mark-offset-2) #000,
+        $mark-offset-1 (-1px - $mark-offset-2) #000, 
+        $mark-offset-1 (0 - $mark-offset-2) #fff, 
+        $mark-offset-1 (1px - $mark-offset-2) #000;
+        content: "";
+        left: 0;
+        top: 0;
+    }
+    &::after {
+        position: absolute;
+        width: $mark-length-2;
+        height: $mark-length-1;
+        box-shadow: 
+        (-1px + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #000, 
+        (0 + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #fff, 
+        (1px + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #000,
+        (-1px + $mark-offset-2) $mark-offset-1 #000, 
+        (0 + $mark-offset-2) $mark-offset-1 #fff, 
+        (1px + $mark-offset-2) $mark-offset-1 #000;
+        content: "";
+        left: -$mark-offset-2;
+        top: $mark-length-2 - $mark-offset-2;
+    }
+}
 .luma-adjust-layer {
     position: absolute;
     left: 0;
