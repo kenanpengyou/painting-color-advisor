@@ -36,9 +36,11 @@ let totalVm: any = new Vue({
             mode: "normal"
         },
         colorOfPicker: "#ffffff",
+        colorForAdvisor: "",
         indicatorInverted: false,
         lumaAdjust: false,
         magnifierRightBottom: false,
+        targetMarkStyle: {},
         canvasContainerStyle: {},
         canvasClientRect: {
             x: 0,
@@ -64,6 +66,9 @@ let totalVm: any = new Vue({
         eventBus.$on("picker:move", (e: any) => {
             this.movePicker(e.clientX, e.clientY);
         });
+        eventBus.$on("picker:drop", (e: any) => {
+            this.dropPicker(e.clientX, e.clientY);
+        });
     },
     computed: {
         colorBoxStyle () {
@@ -82,6 +87,22 @@ let totalVm: any = new Vue({
                 default:
                     this.lumaAdjust = !this.lumaAdjust;
             }
+        },
+        dropPicker (clientX: number, clientY: number) {
+
+            // skip when using other modes like "grab"
+            if (this.painting.mode !== "normal") {
+                return;
+            }
+            
+            let markX: number = clientX + this.$refs.paintingContainer.scrollLeft;
+            let markY: number = clientY + this.$refs.paintingContainer.scrollTop;
+
+            this.targetMarkStyle = {
+                left: `${markX}px`,
+                top: `${markY}px`
+            };
+            this.colorForAdvisor = this.colorOfPicker;
         },
         refreshPickerStatus (relativeX: number, relativeY: number) {
 

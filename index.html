@@ -30,12 +30,16 @@
                     class="canvas-element"
                     >
                 </canvas>
-                <div class="picker-target-mark"></div>
+                <div 
+                    v-show="Object.keys(targetMarkStyle).length > 0"
+                    v-bind:style="targetMarkStyle"
+                    class="picker-target-mark"
+                ></div>
                 <div v-show="lumaAdjust" class="luma-adjust-layer"></div>
             </div>
         </div>
         <div 
-            v-show="imageReady"
+           
             class="panel-container"
             >
             <div 
@@ -47,12 +51,12 @@
                     <canvas
                         ref="magnifierCanvas"
                         class="canvas-magnifier"
-                    >
+                        >
                     </canvas>
                     <div 
                         v-bind:class="indicatorInverted ? '-theme-b' : ''"
                         class="picker-indicator"
-                    >
+                        >
                     </div>
                 </div>
                 <div class="color-display">
@@ -64,12 +68,24 @@
                 class="switch-panel"
                 v-bind:class="painting.classObject['-centered'] ? '' : '-scrollOffset'"
                 >
-                <div 
+                <div
                     class="switcher -luma" 
                     v-bind:class="lumaAdjust ? '-active' : ''" 
                     v-on:click="switchDisplay('luma')"
                     title="切换素描关系明度显示"
                 ></div>
+            </div>
+            <div
+        
+                class="advisor-panel"
+                >
+                <div class="advisor-target">
+                    <div class="color-card">
+                        <em class="card-main" style="background: #ee595f;"></em>
+                        <cite class="card-text">#ee595f</cite>
+                    </div>
+                </div>
+                
             </div>
         </div>
     </section>
