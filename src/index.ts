@@ -16,7 +16,9 @@ const baseConfig = {
     magnifierCanvasSize: 100,
 
     indicatorColor1: "#1ee",
-    indicatorColor2: "#f00"
+    indicatorColor2: "#f00",
+    cardNoteColor1: "#333",
+    cardNoteColor2: "#fff"
 };
 
 let paintingCtx: CanvasRenderingContext2D;
@@ -24,23 +26,23 @@ let magnifierCtx: CanvasRenderingContext2D;
 let grabControl: GrabControl;
 let pickerControl: PickerControl;
 
+const randomColorCount: number = 5;
+let randomColorList: Array<string> = [];
+
+for (let i: number = 0; i < randomColorCount; i++) {
+    let n = (Math.random() * 0xfffff * 1000000).toString(16);
+    let randomColor: string = '#' + n.slice(0, 6);
+    randomColorList.push(randomColor);
+}
+
 let totalVm: any = new Vue({
     el: "[data-total-container]",
     data: {
+        // imageReady: true,
         imageReady: false,
-        painting: {
-            classObject: {
-                "-centered": true,
-                "-grab": false
-            },
-            mode: "normal"
+        dropBoxClass: {
+            "-active": false
         },
-        colorOfPicker: "#ffffff",
-        colorForAdvisor: "",
-        indicatorInverted: false,
-        lumaAdjust: false,
-        magnifierRightBottom: false,
-        targetMarkStyle: {},
         canvasContainerStyle: {},
         canvasClientRect: {
             x: 0,
@@ -48,9 +50,21 @@ let totalVm: any = new Vue({
             width: 0,
             height: 0
         },
-        dropBoxClass: {
-            "-active": false
-        }
+        painting: {
+            classObject: {
+                "-centered": true,
+                "-grab": false
+            },
+            mode: "normal"
+        },
+        lumaAdjust: false,
+        pickerColor: "#ffffff",
+        pickerIndicatorInverted: false,
+        magnifierRightBottom: false,
+        targetMarkStyle: {},
+        targetColor: "",
+        targetNoteInverted: false,
+        targetRecommendColorList: randomColorList
     },
     mounted () {
         paintingCtx = this.$refs.imageCanvas.getContext("2d");
@@ -71,15 +85,37 @@ let totalVm: any = new Vue({
         });
     },
     computed: {
+        isPickerMarkShow () {
+            return Object.keys(this.targetMarkStyle).length > 0 && !this.lumaAdjust;
+        },
+        isMagnifierShow () {
+            return !this.lumaAdjust;
+        },
         colorBoxStyle () {
             return {
-                backgroundColor: this.colorOfPicker
+                backgroundColor: this.pickerColor
             };
+        },
+        targetCardStyle () {
+            if (this.targetColor) {
+                return {
+                    backgroundColor: this.targetColor
+                };
+            } else {
+                return {};
+            }
         }
     },
     methods: {
         handleMagnifierEnter (e: MouseEvent) {
-            this.magnifierRightBottom = !this.magnifierRightBottom;
+            // this.magnifierRightBottom = !this.magnifierRightBottom;
+        },
+        copyToClipboard (color: string) {
+            console.log("[copyToClipboard] color = ", color);
+        },
+        calcNoteInverted (color: string) {
+            let contrastNumber: Number = contrastHex(color, baseConfig.cardNoteColor1);
+            return contrastNumber < 4.5;
         },
         switchDisplay (type: string) {
             switch (type) {
@@ -88,23 +124,9 @@ let totalVm: any = new Vue({
                     this.lumaAdjust = !this.lumaAdjust;
             }
         },
-        dropPicker (clientX: number, clientY: number) {
-
-            // skip when using other modes like "grab"
-            if (this.painting.mode !== "normal") {
-                return;
-            }
-            
-            let markX: number = clientX + this.$refs.paintingContainer.scrollLeft;
-            let markY: number = clientY + this.$refs.paintingContainer.scrollTop;
-
-            this.targetMarkStyle = {
-                left: `${markX}px`,
-                top: `${markY}px`
-            };
-            this.colorForAdvisor = this.colorOfPicker;
-        },
-        refreshPickerStatus (relativeX: number, relativeY: number) {
+        calcPickerPos (clientX: number, clientY: number) {
+            let relativeX: number = clientX + this.$refs.paintingContainer.scrollLeft - this.canvasClientRect.x;
+            let relativeY: number = clientY + this.$refs.paintingContainer.scrollTop - this.canvasClientRect.y;
 
             // edge check
             if (relativeX < 0) {
@@ -119,6 +141,28 @@ let totalVm: any = new Vue({
                 relativeY = this.canvasClientRect.height - 1;
             }
 
+            return {
+                x: relativeX,
+                y: relativeY
+            };
+        },
+        dropPicker (clientX: number, clientY: number) {   
+
+            // skip when using other modes like "grab"
+            if (this.painting.mode !== "normal") {
+                return;
+            }
+
+            let pickerPos = this.calcPickerPos(clientX, clientY);
+            this.targetMarkStyle = {
+                left: `${pickerPos.x}px`,
+                top: `${pickerPos.y}px`
+            };
+            this.targetColor = this.pickerColor;
+            this.targetNoteInverted = this.calcNoteInverted(this.targetColor);
+        },
+        refreshPickerStatus (relativeX: number, relativeY: number) {
+
             let pixelData: Uint8ClampedArray;
             let pixelSize = baseConfig.magnifierCanvasSize / baseConfig.magnifierPixelScale;
             let pixelAmplitude: number = Math.floor((pixelSize - 1) / 2);
@@ -126,11 +170,11 @@ let totalVm: any = new Vue({
             let startY: number = relativeY - pixelAmplitude;
 
             pixelData = paintingCtx.getImageData(relativeX, relativeY, 1, 1).data;
-            this.colorOfPicker = rgb2hex(pixelData[0], pixelData[1], pixelData[2]);
+            this.pickerColor = rgb2hex(pixelData[0], pixelData[1], pixelData[2]);
 
             // update indicator color for proper contrast (below "AA")
-            let contrastNumber = contrastHex(this.colorOfPicker, baseConfig.indicatorColor1);
-            this.indicatorInverted = contrastNumber < 4.5;
+            let contrastNumber: number = contrastHex(this.pickerColor, baseConfig.indicatorColor1);
+            this.pickerIndicatorInverted = contrastNumber < 4.5;
 
             // disable smooth for pixel scale
             magnifierCtx.imageSmoothingEnabled = false;
@@ -143,11 +187,10 @@ let totalVm: any = new Vue({
                 0, 0, baseConfig.magnifierCanvasSize, baseConfig.magnifierCanvasSize);
         },
         movePicker (clientX: number, clientY: number) {
-            let relativeX: number = clientX + this.$refs.paintingContainer.scrollLeft - this.canvasClientRect.x;
-            let relativeY: number = clientY + this.$refs.paintingContainer.scrollTop - this.canvasClientRect.y;
+            let pickerPos = this.calcPickerPos(clientX, clientY);
 
             if (!this.lumaAdjust) {
-                this.refreshPickerStatus(relativeX, relativeY);
+                this.refreshPickerStatus(pickerPos.x, pickerPos.y);
             }
         },
         movePainting (dx: number, dy: number) {

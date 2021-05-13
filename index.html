@@ -25,25 +25,27 @@
                 class="canvas-container"
                 v-bind:style="canvasContainerStyle"
                 >
-                <canvas 
-                    ref="imageCanvas" 
-                    class="canvas-element"
-                    >
-                </canvas>
-                <div 
-                    v-show="Object.keys(targetMarkStyle).length > 0"
-                    v-bind:style="targetMarkStyle"
-                    class="picker-target-mark"
-                ></div>
-                <div v-show="lumaAdjust" class="luma-adjust-layer"></div>
+                <div class="canvas-element-container">
+                    <canvas 
+                        ref="imageCanvas" 
+                        class="canvas-element"
+                        >
+                    </canvas>
+                    <div 
+                        v-show="isPickerMarkShow"
+                        v-bind:style="targetMarkStyle"
+                        class="picker-target-mark"
+                    ></div>
+                    <div v-show="lumaAdjust" class="luma-adjust-layer"></div>
+                </div>
             </div>
         </div>
         <div 
-           
+            v-show="imageReady"
             class="panel-container"
             >
             <div 
-                v-show="!lumaAdjust"
+                v-show="isMagnifierShow"
                 v-on:mouseenter="handleMagnifierEnter"
                 v-bind:class="magnifierRightBottom ? '-right-bottom' : ''"
                 class="magnifier-panel">
@@ -54,14 +56,14 @@
                         >
                     </canvas>
                     <div 
-                        v-bind:class="indicatorInverted ? '-theme-b' : ''"
+                        v-bind:class="pickerIndicatorInverted ? '-theme-b' : ''"
                         class="picker-indicator"
                         >
                     </div>
                 </div>
                 <div class="color-display">
                     <div class="color-box" v-bind:style="colorBoxStyle"></div>
-                    <div class="color-text">{{ colorOfPicker }}</div>
+                    <div class="color-text">{{ pickerColor }}</div>
                 </div>
             </div>
             <div 
@@ -71,21 +73,47 @@
                 <div
                     class="switcher -luma" 
                     v-bind:class="lumaAdjust ? '-active' : ''" 
+                    v-on:mouseup.stop
                     v-on:click="switchDisplay('luma')"
                     title="切换素描关系明度显示"
                 ></div>
             </div>
             <div
-        
+                v-on:mouseup.stop
                 class="advisor-panel"
                 >
                 <div class="advisor-target">
-                    <div class="color-card">
-                        <em class="card-main" style="background: #ee595f;"></em>
-                        <cite class="card-text">#ee595f</cite>
+                    <div class="target-title">Target</div>
+                    <div class="target-content">
+                        <div class="color-card">
+                            <em 
+                                v-bind:style="targetCardStyle"
+                                class="card-main"
+                                ></em>
+                            <cite 
+                                v-bind:class="targetNoteInverted ? '-theme-b' : ''"
+                                class="card-note">{{ targetColor }}</cite>
+                        </div>
                     </div>
                 </div>
-                
+                <div class="advisor-output">
+                    <div class="output-title">Recommend</div>
+                    <div class="output-content">
+                        <div 
+                            @click="copyToClipboard(item)"
+                            v-bind:key="$index"
+                            v-for="(item, $index) in targetRecommendColorList"
+                            class="color-card">
+                            <em 
+                                v-bind:style="{backgroundColor: item}"
+                                class="card-main"
+                                ></em>
+                            <cite 
+                                v-bind:class="calcNoteInverted(item) ? '-theme-b' : ''"
+                                class="card-note">{{ item }}</cite>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
