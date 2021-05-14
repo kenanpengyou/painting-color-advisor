@@ -1,4 +1,3 @@
-
 $theme-color: #78767a;
 $indicator-color-1: #1ee;
 $indicator-color-2: #f00;
@@ -6,7 +5,8 @@ $card-note-color-1: #333;
 $card-note-color-2: #fff;
 
 
-html, body {
+html,
+body {
     height: 100%;
 }
 
@@ -25,7 +25,7 @@ body {
 
 .total-container {
     position: relative;
-    height: 100%; 
+    height: 100%;
 }
 
 // painting
@@ -38,10 +38,12 @@ body {
         justify-content: center;
         align-items: center;
     }
+
     &.-grab {
         cursor: grab;
     }
 }
+
 .drop-box {
     display: flex;
     justify-content: center;
@@ -59,21 +61,25 @@ body {
         border-color: #f56161;
     }
 }
+
 .box-note {
     color: #777;
     font-size: 14px;
     font-style: normal;
     cursor: default;
 }
+
 .canvas-container {
     flex: none;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 .canvas-element-container {
     position: relative;
 }
+
 .canvas-element {
     display: block;
 
@@ -81,6 +87,7 @@ body {
         cursor: url(icons/picker.png) 8 23, auto;
     }
 }
+
 .picker-target-mark {
 
     $mark-length-1: 10px;
@@ -98,33 +105,35 @@ body {
         position: absolute;
         width: $mark-length-1;
         height: $mark-length-2;
-        box-shadow: 
-        (-$mark-length-1 - $mark-offset-1) (-1px - $mark-offset-2) #000, 
-        (-$mark-length-1 - $mark-offset-1) (0 - $mark-offset-2) #fff, 
-        (-$mark-length-1 - $mark-offset-1) (1px - $mark-offset-2) #000,
-        $mark-offset-1 (-1px - $mark-offset-2) #000, 
-        $mark-offset-1 (0 - $mark-offset-2) #fff, 
-        $mark-offset-1 (1px - $mark-offset-2) #000;
+        box-shadow:
+            (-$mark-length-1 - $mark-offset-1) (-1px - $mark-offset-2) #000,
+            (-$mark-length-1 - $mark-offset-1) (0 - $mark-offset-2) #fff,
+            (-$mark-length-1 - $mark-offset-1) (1px - $mark-offset-2) #000,
+            $mark-offset-1 (-1px - $mark-offset-2) #000,
+            $mark-offset-1 (0 - $mark-offset-2) #fff,
+            $mark-offset-1 (1px - $mark-offset-2) #000;
         content: "";
         left: 0;
         top: 0;
     }
+
     &::after {
         position: absolute;
         width: $mark-length-2;
         height: $mark-length-1;
-        box-shadow: 
-        (-1px + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #000, 
-        (0 + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #fff, 
-        (1px + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #000,
-        (-1px + $mark-offset-2) $mark-offset-1 #000, 
-        (0 + $mark-offset-2) $mark-offset-1 #fff, 
-        (1px + $mark-offset-2) $mark-offset-1 #000;
+        box-shadow:
+            (-1px + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #000,
+            (0 + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #fff,
+            (1px + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #000,
+            (-1px + $mark-offset-2) $mark-offset-1 #000,
+            (0 + $mark-offset-2) $mark-offset-1 #fff,
+            (1px + $mark-offset-2) $mark-offset-1 #000;
         content: "";
         left: -$mark-offset-2;
         top: $mark-length-2 - $mark-offset-2;
     }
 }
+
 .luma-adjust-layer {
     position: absolute;
     left: 0;
@@ -143,6 +152,7 @@ $magnifier-panel-offset-x: 10px;
 $magnifier-panel-offset-y: 10px;
 $switch-panel-left: 10px;
 $switch-panel-bottom: 10px;
+
 .panel-container {
     position: absolute;
     left: 0;
@@ -152,6 +162,7 @@ $switch-panel-bottom: 10px;
     z-index: 100;
     pointer-events: none;
 }
+
 .switch-panel {
     position: absolute;
     display: flex;
@@ -163,16 +174,18 @@ $switch-panel-bottom: 10px;
         bottom: $switch-panel-bottom + $scroll-bar-width;
     }
 }
+
 .switcher {
     background: #fff;
     border: 2px solid #666;
     border-radius: $panel-radius;
     opacity: .6;
     cursor: pointer;
-    
+
     &:hover {
         opacity: .8;
     }
+
     &.-luma::before {
         display: block;
         width: 32px;
@@ -180,10 +193,12 @@ $switch-panel-bottom: 10px;
         background: url(./icons/luma.svg) 0 / contain no-repeat;
         content: "";
     }
+
     &.-active {
         opacity: 1;
     }
 }
+
 .magnifier-panel {
     position: absolute;
     padding: 5px;
@@ -222,11 +237,13 @@ $switch-panel-bottom: 10px;
             border-color: $indicator-color-2;
         }
     }
+
     .color-display {
         display: flex;
         align-items: center;
         padding: 5px 0 0 0;
     }
+
     .color-box {
         width: 22px;
         height: 22px;
@@ -235,6 +252,7 @@ $switch-panel-bottom: 10px;
         background-clip: content-box;
         margin-right: 10px;
     }
+
     .color-text {
         flex: 1;
         color: #fff;
@@ -245,7 +263,8 @@ $switch-panel-bottom: 10px;
 $card-width: 100px;
 $card-height: 30px;
 $advisor-padding: 15px;
-$advisor-width: $advisor-padding * 2 + $card-width;
+$advisor-width: $advisor-padding * 2+$card-width;
+
 .advisor-panel {
     position: absolute;
     width: $advisor-width;
@@ -270,11 +289,13 @@ $advisor-width: $advisor-padding * 2 + $card-width;
         overflow: hidden;
         cursor: pointer;
     }
+
     .card-main {
         display: block;
         width: 100%;
         height: 100%;
     }
+
     .card-note {
         position: absolute;
         display: flex;
@@ -289,10 +310,12 @@ $advisor-width: $advisor-padding * 2 + $card-width;
         top: 0;
         bottom: 0;
     }
+
     .card-note.-theme-b {
         color: $card-note-color-2;
     }
 }
+
 .advisor-target {
     margin: 0 -1*$advisor-padding;
     padding: 0 $advisor-padding $advisor-padding;
@@ -304,11 +327,13 @@ $advisor-width: $advisor-padding * 2 + $card-width;
         font-size: 14px;
         font-weight: bold;
     }
+
     .target-content {
         display: flex;
         justify-content: center;
     }
 }
+
 .advisor-output {
     margin: 0 -1*$advisor-padding;
     padding: $advisor-padding;
@@ -319,16 +344,130 @@ $advisor-width: $advisor-padding * 2 + $card-width;
         font-size: 14px;
         font-weight: bold;
     }
+
     .color-card {
         margin-bottom: 10px;
     }
+
     .card-note {
         opacity: 0;
         transform: translatex(10px);
         transition: opacity .5s ease, transform .5s ease;
     }
-    .color-card:hover > .card-note {
+
+    .color-card:hover>.card-note {
         opacity: 1;
         transform: translateX(0);
+    }
+}
+
+/* -------------------------------------------------- *\
+
+    # support
+
+\* -------------------------------------------------- */
+
+.toast-top {
+    position: fixed;
+    width: 100px;
+    margin: 0 0 0 -50px;
+    padding: 10px 30px;
+    border-radius: 5px;
+    background: rgba(#000, .6);
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    left: 50%;
+    top: 10px;
+}
+
+
+/* -------------------------------------------------- *\
+
+    # keyframes
+
+\* -------------------------------------------------- */
+
+
+// ref from: https://github.com/miniMAC/magic
+.spaceInUp {
+    -webkit-animation-name: spaceInUp;
+    animation-name: spaceInUp;
+}
+
+@-webkit-keyframes spaceInUp {
+    0% {
+        opacity: 0;
+        -webkit-transform-origin: 50% 0%;
+        transform-origin: 50% 0%;
+        -webkit-transform: scale(0.2) translate(0%, -200%);
+        transform: scale(0.2) translate(0%, -200%);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform-origin: 50% 0%;
+        transform-origin: 50% 0%;
+        -webkit-transform: scale(1) translate(0%, 0%);
+        transform: scale(1) translate(0%, 0%);
+    }
+}
+
+@keyframes spaceInUp {
+    0% {
+        opacity: 0;
+        -webkit-transform-origin: 50% 0%;
+        transform-origin: 50% 0%;
+        -webkit-transform: scale(0.2) translate(0%, -200%);
+        transform: scale(0.2) translate(0%, -200%);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform-origin: 50% 0%;
+        transform-origin: 50% 0%;
+        -webkit-transform: scale(1) translate(0%, 0%);
+        transform: scale(1) translate(0%, 0%);
+    }
+}
+
+.spaceOutDown {
+    -webkit-animation-name: spaceOutDown;
+    animation-name: spaceOutDown;
+}
+
+@-webkit-keyframes spaceOutDown {
+    0% {
+        opacity: 1;
+        -webkit-transform-origin: 50% 100%;
+        transform-origin: 50% 100%;
+        -webkit-transform: scale(1) translate(0%, 0%);
+        transform: scale(1) translate(0%, 0%);
+    }
+
+    100% {
+        opacity: 0;
+        -webkit-transform-origin: 50% 100%;
+        transform-origin: 50% 100%;
+        -webkit-transform: scale(0.2) translate(0%, 200%);
+        transform: scale(0.2) translate(0%, 200%);
+    }
+}
+
+@keyframes spaceOutDown {
+    0% {
+        opacity: 1;
+        -webkit-transform-origin: 50% 100%;
+        transform-origin: 50% 100%;
+        -webkit-transform: scale(1) translate(0%, 0%);
+        transform: scale(1) translate(0%, 0%);
+    }
+
+    100% {
+        opacity: 0;
+        -webkit-transform-origin: 50% 100%;
+        transform-origin: 50% 100%;
+        -webkit-transform: scale(0.2) translate(0%, 200%);
+        transform: scale(0.2) translate(0%, 200%);
     }
 }

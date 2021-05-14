@@ -40,6 +40,13 @@ let totalVm: any = new Vue({
     data: {
         // imageReady: true,
         imageReady: false,
+        toastTop: {
+            classObject: {
+                "-space-in": false,
+                "-space-out": false
+            },
+            text: "Copied."
+        },
         dropBoxClass: {
             "-active": false
         },
