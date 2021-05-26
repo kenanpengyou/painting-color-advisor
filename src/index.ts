@@ -12,8 +12,8 @@ const baseConfig = {
     edgeReserve: 100,
 
     // pixel scale of the magnifier
-    magnifierPixelScale: 4,
-    magnifierCanvasSize: 100,
+    magnifierPixelScale: 8,
+    magnifierCanvasSize: 120,
 
     indicatorColor1: "#1ee",
     indicatorColor2: "#f00",
@@ -45,6 +45,8 @@ let totalVm: any = new Vue({
                 "-space-in": false,
                 "-space-out": false
             },
+            timeFlag: null,
+            visible: false,
             text: "Copied."
         },
         dropBoxClass: {
@@ -117,8 +119,40 @@ let totalVm: any = new Vue({
         handleMagnifierEnter (e: MouseEvent) {
             // this.magnifierRightBottom = !this.magnifierRightBottom;
         },
-        copyToClipboard (color: string) {
+        showToastTop (message: string) {
+            let toastTop = this.toastTop;
+            let toastTopEl = this.$refs.toastTopEl;
+            clearTimeout(toastTop.timeFlag);
+            toastTop.visible = true;
+            toastTop.animeClass = "-space-in";
+            toastTop.text = message;
+            // console.log("[showToastTop]", "1");
+
+            toastTop.timeFlag = setTimeout(() => {
+                toastTop.animeClass = "-space-out";
+                toastTopEl.addEventListener("animationend", () => {
+                    if (toastTop.animeClass === "-space-out") {
+                        toastTop.visible = false;
+                    };
+                }, {
+                    once: true
+                });
+            }, 2000);
+        },
+        copyToClipboard(color: string) {
             console.log("[copyToClipboard] color = ", color);
+
+            if (color) {
+                navigator.permissions.query({ name: "clipboard-write" }).then(result => {
+                    if (result.state == "granted" || result.state == "prompt") {
+                        navigator.clipboard.writeText(color).then(() => {
+                            this.showToastTop("Copied.");
+                        }, () => {
+                            this.showToastTop("Copy failed.")
+                        });
+                    }
+                });
+            }
         },
         calcNoteInverted (color: string) {
             let contrastNumber: Number = contrastHex(color, baseConfig.cardNoteColor1);
@@ -360,8 +394,8 @@ function adjustPaintingArea (): void {
         totalVm.canvasClientRect = {
             width: canvasWidth, 
             height: canvasHeight,
-            x: (viewportWidth - canvasWidth) / 2,
-            y: (viewportHeight - canvasHeight) / 2
+            x: Math.floor((viewportWidth - canvasWidth) / 2),
+            y: Math.floor((viewportHeight - canvasHeight) / 2)
         };
     }
 }

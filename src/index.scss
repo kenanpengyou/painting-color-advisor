@@ -3,8 +3,6 @@ $indicator-color-1: #1ee;
 $indicator-color-2: #f00;
 $card-note-color-1: #333;
 $card-note-color-2: #fff;
-
-
 html,
 body {
     height: 100%;
@@ -33,12 +31,10 @@ body {
     display: flex;
     height: 100%;
     overflow: auto;
-
     &.-centered {
         justify-content: center;
         align-items: center;
     }
-
     &.-grab {
         cursor: grab;
     }
@@ -56,7 +52,6 @@ body {
     min-height: 125px;
     max-width: 400px;
     max-height: 250px;
-
     &.-active {
         border-color: #f56161;
     }
@@ -82,52 +77,35 @@ body {
 
 .canvas-element {
     display: block;
-
     .painting-container:not(.-grab) & {
         cursor: url(icons/picker.png) 8 23, auto;
     }
 }
 
 .picker-target-mark {
-
     $mark-length-1: 10px;
     $mark-length-2: 1px;
     $mark-offset-1: 3px;
     $mark-offset-2: 5px;
-
     position: absolute;
     margin: $mark-offset-2 0 0 0;
     left: 0;
     top: 0;
     pointer-events: none;
-
     &::before {
         position: absolute;
         width: $mark-length-1;
         height: $mark-length-2;
-        box-shadow:
-            (-$mark-length-1 - $mark-offset-1) (-1px - $mark-offset-2) #000,
-            (-$mark-length-1 - $mark-offset-1) (0 - $mark-offset-2) #fff,
-            (-$mark-length-1 - $mark-offset-1) (1px - $mark-offset-2) #000,
-            $mark-offset-1 (-1px - $mark-offset-2) #000,
-            $mark-offset-1 (0 - $mark-offset-2) #fff,
-            $mark-offset-1 (1px - $mark-offset-2) #000;
+        box-shadow: (-$mark-length-1 - $mark-offset-1) (-1px - $mark-offset-2) #000, (-$mark-length-1 - $mark-offset-1) (0 - $mark-offset-2) #fff, (-$mark-length-1 - $mark-offset-1) (1px - $mark-offset-2) #000, $mark-offset-1 (-1px - $mark-offset-2) #000, $mark-offset-1 (0 - $mark-offset-2) #fff, $mark-offset-1 (1px - $mark-offset-2) #000;
         content: "";
         left: 0;
         top: 0;
     }
-
     &::after {
         position: absolute;
         width: $mark-length-2;
         height: $mark-length-1;
-        box-shadow:
-            (-1px + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #000,
-            (0 + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #fff,
-            (1px + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #000,
-            (-1px + $mark-offset-2) $mark-offset-1 #000,
-            (0 + $mark-offset-2) $mark-offset-1 #fff,
-            (1px + $mark-offset-2) $mark-offset-1 #000;
+        box-shadow: (-1px + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #000, (0 + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #fff, (1px + $mark-offset-2) (-$mark-offset-1 - $mark-length-1) #000, (-1px + $mark-offset-2) $mark-offset-1 #000, (0 + $mark-offset-2) $mark-offset-1 #fff, (1px + $mark-offset-2) $mark-offset-1 #000;
         content: "";
         left: -$mark-offset-2;
         top: $mark-length-2 - $mark-offset-2;
@@ -144,7 +122,6 @@ body {
     mix-blend-mode: saturation;
 }
 
-
 // panel
 $scroll-bar-width: 17px;
 $panel-radius: 4px;
@@ -152,7 +129,6 @@ $magnifier-panel-offset-x: 10px;
 $magnifier-panel-offset-y: 10px;
 $switch-panel-left: 10px;
 $switch-panel-bottom: 10px;
-
 .panel-container {
     position: absolute;
     left: 0;
@@ -169,7 +145,6 @@ $switch-panel-bottom: 10px;
     left: $switch-panel-left;
     bottom: $switch-panel-bottom;
     pointer-events: auto;
-
     &.-scrollOffset {
         bottom: $switch-panel-bottom + $scroll-bar-width;
     }
@@ -181,11 +156,9 @@ $switch-panel-bottom: 10px;
     border-radius: $panel-radius;
     opacity: .6;
     cursor: pointer;
-
     &:hover {
         opacity: .8;
     }
-
     &.-luma::before {
         display: block;
         width: 32px;
@@ -193,7 +166,6 @@ $switch-panel-bottom: 10px;
         background: url(./icons/luma.svg) 0 / contain no-repeat;
         content: "";
     }
-
     &.-active {
         opacity: 1;
     }
@@ -207,43 +179,37 @@ $switch-panel-bottom: 10px;
     left: $magnifier-panel-offset-x;
     top: $magnifier-panel-offset-y;
     pointer-events: auto;
-
     &.-right-bottom {
         left: auto;
         top: auto;
         right: $magnifier-panel-offset-x;
         bottom: $magnifier-panel-offset-y;
     }
-
     .view-area {
         position: relative;
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
         border: 1px solid #acacac;
         background: #fff;
     }
-
     .picker-indicator {
         position: absolute;
-        width: 4px;
-        height: 4px;
+        width: 8px;
+        height: 8px;
         box-sizing: border-box;
         border: 1px solid $indicator-color-1;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-
         &.-theme-b {
             border-color: $indicator-color-2;
         }
     }
-
     .color-display {
         display: flex;
         align-items: center;
         padding: 5px 0 0 0;
     }
-
     .color-box {
         width: 22px;
         height: 22px;
@@ -252,7 +218,6 @@ $switch-panel-bottom: 10px;
         background-clip: content-box;
         margin-right: 10px;
     }
-
     .color-text {
         flex: 1;
         color: #fff;
@@ -264,7 +229,6 @@ $card-width: 100px;
 $card-height: 30px;
 $advisor-padding: 15px;
 $advisor-width: $advisor-padding * 2+$card-width;
-
 .advisor-panel {
     position: absolute;
     width: $advisor-width;
@@ -277,7 +241,6 @@ $advisor-width: $advisor-padding * 2+$card-width;
     top: 10px;
     bottom: 10px;
     pointer-events: auto;
-
     .color-card {
         position: relative;
         width: $card-width;
@@ -289,13 +252,11 @@ $advisor-width: $advisor-padding * 2+$card-width;
         overflow: hidden;
         cursor: pointer;
     }
-
     .card-main {
         display: block;
         width: 100%;
         height: 100%;
     }
-
     .card-note {
         position: absolute;
         display: flex;
@@ -310,7 +271,6 @@ $advisor-width: $advisor-padding * 2+$card-width;
         top: 0;
         bottom: 0;
     }
-
     .card-note.-theme-b {
         color: $card-note-color-2;
     }
@@ -320,46 +280,50 @@ $advisor-width: $advisor-padding * 2+$card-width;
     margin: 0 -1*$advisor-padding;
     padding: 0 $advisor-padding $advisor-padding;
     border-bottom: 1px dashed $theme-color;
-
     .target-title {
         margin-bottom: 10px;
         color: #333;
         font-size: 14px;
         font-weight: bold;
     }
-
     .target-content {
         display: flex;
         justify-content: center;
+    }
+    .card-note {
+        opacity: 0;
+        transform: translatex(10px);
+        transition: opacity .5s ease, transform .5s ease;
+    }
+    .color-card:hover>.card-note {
+        opacity: 1;
+        transform: translateX(0);
     }
 }
 
 .advisor-output {
     margin: 0 -1*$advisor-padding;
     padding: $advisor-padding;
-
     .output-title {
         margin-bottom: 10px;
         color: #333;
         font-size: 14px;
         font-weight: bold;
     }
-
     .color-card {
         margin-bottom: 10px;
     }
-
     .card-note {
         opacity: 0;
         transform: translatex(10px);
         transition: opacity .5s ease, transform .5s ease;
     }
-
     .color-card:hover>.card-note {
         opacity: 1;
         transform: translateX(0);
     }
 }
+
 
 /* -------------------------------------------------- *\
 
@@ -369,16 +333,25 @@ $advisor-width: $advisor-padding * 2+$card-width;
 
 .toast-top {
     position: fixed;
-    width: 100px;
-    margin: 0 0 0 -50px;
+    width: 160px;
+    margin: 0 0 0 -80px;
     padding: 10px 30px;
     border-radius: 5px;
     background: rgba(#000, .6);
+    box-sizing: border-box;
     color: #fff;
     font-size: 16px;
     text-align: center;
     left: 50%;
     top: 10px;
+    animation-duration: .25s;
+    animation-fill-mode: forwards;
+    &.-space-in {
+        @extend .spaceInUp;
+    }
+    &.-space-out {
+        @extend .spaceOutDown;
+    }
 }
 
 
@@ -387,7 +360,6 @@ $advisor-width: $advisor-padding * 2+$card-width;
     # keyframes
 
 \* -------------------------------------------------- */
-
 
 // ref from: https://github.com/miniMAC/magic
 .spaceInUp {
@@ -403,7 +375,6 @@ $advisor-width: $advisor-padding * 2+$card-width;
         -webkit-transform: scale(0.2) translate(0%, -200%);
         transform: scale(0.2) translate(0%, -200%);
     }
-
     100% {
         opacity: 1;
         -webkit-transform-origin: 50% 0%;
@@ -421,7 +392,6 @@ $advisor-width: $advisor-padding * 2+$card-width;
         -webkit-transform: scale(0.2) translate(0%, -200%);
         transform: scale(0.2) translate(0%, -200%);
     }
-
     100% {
         opacity: 1;
         -webkit-transform-origin: 50% 0%;
@@ -444,7 +414,6 @@ $advisor-width: $advisor-padding * 2+$card-width;
         -webkit-transform: scale(1) translate(0%, 0%);
         transform: scale(1) translate(0%, 0%);
     }
-
     100% {
         opacity: 0;
         -webkit-transform-origin: 50% 100%;
@@ -462,7 +431,6 @@ $advisor-width: $advisor-padding * 2+$card-width;
         -webkit-transform: scale(1) translate(0%, 0%);
         transform: scale(1) translate(0%, 0%);
     }
-
     100% {
         opacity: 0;
         -webkit-transform-origin: 50% 100%;

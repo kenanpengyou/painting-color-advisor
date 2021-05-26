@@ -10,6 +10,7 @@ class PickerControl {
     
     private eventBus: any;
     private boundMousemoveHandler: EventListener;
+    private boundMouseupHandler: EventListener;
 
     public constructor () {
         this.eventBus = eventBus;

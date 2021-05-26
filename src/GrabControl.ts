@@ -28,14 +28,14 @@ class GrabControl {
         document.addEventListener("keydown", (e: KeyboardEvent) => {
 
             // key "space"
-            if (e.keyCode === 32) {
+            if (e.code === "Space") {
                 e.preventDefault();
                 this.toggleGrabMode("on");
             }
         }, false);
         document.addEventListener("keyup", (e: KeyboardEvent) => {
 
-            if (e.keyCode === 32) {
+            if (e.code === "Space") {
                 e.preventDefault();
                 this.toggleGrabMode("off");
             }
