@@ -216,12 +216,13 @@ $switch-panel-bottom: 10px;
         padding: 1px;
         border: 1px solid #acacac;
         background-clip: content-box;
-        margin-right: 10px;
+        margin-right: 5px;
     }
     .color-text {
         flex: 1;
         color: #fff;
         font-size: 14px;
+        text-align: center;
     }
 }
 
@@ -304,6 +305,7 @@ $advisor-width: $advisor-padding * 2+$card-width;
 .advisor-output {
     margin: 0 -1*$advisor-padding;
     padding: $advisor-padding;
+    overflow: auto;
     .output-title {
         margin-bottom: 10px;
         color: #333;

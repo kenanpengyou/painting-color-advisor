@@ -26,15 +26,6 @@ let magnifierCtx: CanvasRenderingContext2D;
 let grabControl: GrabControl;
 let pickerControl: PickerControl;
 
-const randomColorCount: number = 5;
-let randomColorList: Array<string> = [];
-
-for (let i: number = 0; i < randomColorCount; i++) {
-    let n = (Math.random() * 0xfffff * 1000000).toString(16);
-    let randomColor: string = '#' + n.slice(0, 6);
-    randomColorList.push(randomColor);
-}
-
 let totalVm: any = new Vue({
     el: "[data-total-container]",
     data: {
@@ -51,6 +42,10 @@ let totalVm: any = new Vue({
         },
         dropBoxClass: {
             "-active": false
+        },
+        advisorOptions: {
+            pointCount: 10,
+            rangePercent: 20
         },
         canvasContainerStyle: {},
         canvasClientRect: {
@@ -73,7 +68,7 @@ let totalVm: any = new Vue({
         targetMarkStyle: {},
         targetColor: "",
         targetNoteInverted: false,
-        targetRecommendColorList: randomColorList
+        targetRecommendColorList: []
     },
     mounted () {
         paintingCtx = this.$refs.imageCanvas.getContext("2d");
@@ -154,6 +149,151 @@ let totalVm: any = new Vue({
                 });
             }
         },
+        generateAdvisor () {
+            let targetColorRGB: number[] = helper.hex2rgb(this.targetColor);
+            
+            const [targetColorY, targetColorU, targetColorV]: number[] = helper.rgb2yuv(...targetColorRGB);
+
+            const pointCount: number = this.advisorOptions.pointCount;
+            const rangePercent = this.advisorOptions.rangePercent;
+            let colorUArray: number[];
+            let colorVArray: number[];
+            let advisorColorArray: string[] = [];
+
+            // part "U"
+            // U [-0.436, 0.436]
+            let max = 0.436;
+            let min = -0.436;
+            let step = (max - min) / (pointCount + 1);
+            let pointArray = [];
+            let sideFlag = "";
+            let targetPoint = targetColorU;
+            let currentPoint = targetColorU;
+            let deltaLeft = 0;
+            let deltaRight = 0;
+
+            for (let i = 1; i <= pointCount; i++) {
+                let deltaFlag = "";
+
+                if (sideFlag === "left") {
+                    deltaLeft = deltaLeft + 1;
+                    deltaFlag = "left";
+                } else if (sideFlag === "right") {
+                    deltaRight = deltaRight + 1;
+                    deltaFlag = "right";
+                } else {
+                    if (i % 2 === 0) {
+                        deltaLeft = deltaLeft + 1;
+                        deltaFlag = "left";
+                    } else {
+                        deltaRight = deltaRight + 1;
+                        deltaFlag = "right";
+                    }
+                }
+
+                if (deltaFlag === "right") {
+                    currentPoint = targetPoint + deltaRight * step;
+                } else if (deltaFlag === "left") {
+                    currentPoint = targetPoint - deltaLeft * step;
+                }
+
+                if (sideFlag === "") {
+                    if (currentPoint > max) {
+                        sideFlag = "left";
+                        deltaLeft = deltaLeft + 1;
+                        currentPoint = targetPoint - deltaLeft * step;
+                    } else if (currentPoint < min) {
+                        sideFlag = "right";
+                        deltaRight = deltaRight + 1;
+                        currentPoint = targetPoint + deltaRight * step;
+                    }
+                }
+
+                pointArray.push(currentPoint);
+            }
+
+            colorUArray = pointArray;
+
+            // part "V"
+            // V [-0.615, 0.615]、
+            max = 0.615;
+            min = -0.615;
+            step = (max - min) / (pointCount + 1);
+            pointArray = [];
+            sideFlag = "";
+            targetPoint = targetColorV;
+            currentPoint = targetColorV;
+            deltaLeft = 0;
+            deltaRight = 0;
+
+            for (let i = 1; i <= pointCount; i++) {
+                let deltaFlag = "";
+
+                if (sideFlag === "left") {
+                    deltaLeft = deltaLeft + 1;
+                    deltaFlag = "left";
+                } else if (sideFlag === "right") {
+                    deltaRight = deltaRight + 1;
+                    deltaFlag = "right";
+                } else {
+                    if (i % 2 === 0) {
+                        deltaLeft = deltaLeft + 1;
+                        deltaFlag = "left";
+                    } else {
+                        deltaRight = deltaRight + 1;
+                        deltaFlag = "right";
+                    }
+                }
+
+                if (deltaFlag === "right") {
+                    currentPoint = targetPoint + deltaRight * step;
+                } else if (deltaFlag === "left") {
+                    currentPoint = targetPoint - deltaLeft * step;
+                }
+
+                if (sideFlag === "") {
+                    if (currentPoint > max) {
+                        sideFlag = "left";
+                        deltaLeft = deltaLeft + 1;
+                        currentPoint = targetPoint - deltaLeft * step;
+                    } else if (currentPoint < min) {
+                        sideFlag = "right";
+                        deltaRight = deltaRight + 1;
+                        currentPoint = targetPoint + deltaRight * step;
+                    }
+                }
+
+                pointArray.push(currentPoint);
+            }
+
+            colorVArray = pointArray;
+
+            for (let i = 0; i < pointCount; i++) {
+                let colorY = targetColorY;
+                let colorU = colorUArray[i];
+                let colorV = targetColorV;
+                console.log("[last for] i = ", i);
+                console.log("[last for] colorY = ", colorY);
+                console.log("[last for] colorU = ", colorU);
+                console.log("[last for] colorV = ", colorV);
+
+                let colorRGB = helper.yuv2rgb(colorY, colorU, colorV);
+                console.log("[last for] colorRGB = ", colorRGB);
+                let colorHEX = helper.rgb2hex(...colorRGB);
+
+                advisorColorArray.push(colorHEX);
+            }
+
+            console.log("[generateAdvisor] targetColorRGB = ", targetColorRGB);
+            console.log("[generateAdvisor] targetColorY = ", targetColorY);
+            console.log("[generateAdvisor] targetColorU = ", targetColorU);
+            console.log("[generateAdvisor] targetColorV = ", targetColorV);
+            console.log("[generateAdvisor] advisorColorArray = ", advisorColorArray);
+
+            this.targetRecommendColorList = advisorColorArray.filter((item) => {
+                return /^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/.test(item);
+            });
+        },
         calcNoteInverted (color: string) {
             let contrastNumber: Number = contrastHex(color, baseConfig.cardNoteColor1);
             return contrastNumber < 4.5;
@@ -190,7 +330,7 @@ let totalVm: any = new Vue({
         dropPicker (clientX: number, clientY: number) {   
 
             // skip when using other modes like "grab"
-            if (this.painting.mode !== "normal") {
+            if (this.painting.mode !== "normal" || this.lumaAdjust) {
                 return;
             }
 
@@ -201,6 +341,7 @@ let totalVm: any = new Vue({
             };
             this.targetColor = this.pickerColor;
             this.targetNoteInverted = this.calcNoteInverted(this.targetColor);
+            this.generateAdvisor();
         },
         refreshPickerStatus (relativeX: number, relativeY: number) {
 
@@ -211,7 +352,7 @@ let totalVm: any = new Vue({
             let startY: number = relativeY - pixelAmplitude;
 
             pixelData = paintingCtx.getImageData(relativeX, relativeY, 1, 1).data;
-            this.pickerColor = rgb2hex(pixelData[0], pixelData[1], pixelData[2]);
+            this.pickerColor = helper.rgb2hex(pixelData[0], pixelData[1], pixelData[2]);
 
             // update indicator color for proper contrast (below "AA")
             let contrastNumber: number = contrastHex(this.pickerColor, baseConfig.indicatorColor1);
@@ -341,22 +482,6 @@ function loadImageBlobToCanvas (imageBlob: Blob): void {
 
         image.src = url;
     }
-}
-
-// r, g, b should be "int"
-function rgb2hex(r: any, g: any, b: any) {
-    r = r.toString(16);
-    g = g.toString(16);
-    b = b.toString(16);
-
-    if (r.length == 1)
-        r = "0" + r;
-    if (g.length == 1)
-        g = "0" + g;
-    if (b.length == 1)
-        b = "0" + b;
-
-    return "#" + r + g + b;
 }
 
 function adjustPaintingArea (): void {
