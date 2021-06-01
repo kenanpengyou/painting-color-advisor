@@ -15,5 +15,6 @@ node_modules
 # build dist
 dist
 
-# psd
+# image files
 *.psd
+*.png

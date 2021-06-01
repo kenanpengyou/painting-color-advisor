@@ -43,47 +43,35 @@ const hex2rgb: Function = function (hex: string) {
     return [r, g, b];
 };
 
-// https://en.wikipedia.org/wiki/YUV#Conversion_to.2Ffrom_RGB
-// Y [0, 1]
-// U [-0.436, 0.436]
-// V [-0.615, 0.615]
+// https://en.wikipedia.org/wiki/YUV
+// use YUV444 and RGB888
 const rgb2yuv: Function = function (r: number, g: number, b: number) {
-    
-    // normalized within [0, 1]   eg. 102 → 0.4 (102/255)
-    r = r / 255;
-    g = g / 255;
-    b = b / 255;
-
-    let y = 0.299 * r + 0.587 * g + 0.114 * b;
-    let u = -0.14713 * r - 0.28886 * g + 0.436 * b;
-    let v = 0.615 * r - 0.51499 * g - 0.10001 * b;
+    let y = ((66 * r + 129 * g + 25 * b + 128) >> 8) + 16;
+    let u = ((-38 * r - 74 * g + 128 * b + 128) >> 8) + 128;
+    let v = ((112 * r - 94 * g - 18 * b + 128) >> 8) + 128;
 
     return [y, u, v];
 };
 
 const yuv2rgb: Function = function (y: number, u: number, v: number) {
     
-    if (u > 0.436) {
-        u = 0.436;
-    } else if (u < -0.436) {
-        u = -0.436;
-    }
+    let c = y - 16;
+    let d = u - 128;
+    let e = v - 128;
 
-    if (v > 0.615) {
-        v = 0.615;
-    } else if (v < -0.615) {
-        v = -0.615;
-    }
+    let r = (298 * c + 409 * e + 128) >> 8;
+    let g = (298 * c - 100 * d - 208 * e + 128) >> 8;
+    let b = (298 * c + 516 * d + 128) >> 8;
 
-    let r = y + 1.13983 * v;
-    let g = y - 0.39465 * u - 0.58060 * v;
-    let b = y + 2.03211 * u;
-
-    r = Math.round(r * 255);
-    g = Math.round(g * 255);
-    b = Math.round(b * 255);
+    r = clamp(r, 0, 255);
+    g = clamp(g, 0, 255);
+    b = clamp(b, 0, 255);
 
     return [r, g, b];
+};
+
+const clamp: Function = function (current: number, min: number, max: number) {
+    return Math.min(Math.max(current, min), max);
 };
 
 export default {

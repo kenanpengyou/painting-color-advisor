@@ -160,11 +160,15 @@ let totalVm: any = new Vue({
             let colorVArray: number[];
             let advisorColorArray: string[] = [];
 
+            console.log("[generateAdvisor] targetColorRGB = ", targetColorRGB);
+            console.log("[generateAdvisor] targetColorY = ", targetColorY);
+            console.log("[generateAdvisor] targetColorU = ", targetColorU);
+            console.log("[generateAdvisor] targetColorV = ", targetColorV);
+
             // part "U"
-            // U [-0.436, 0.436]
-            let max = 0.436;
-            let min = -0.436;
-            let step = (max - min) / (pointCount + 1);
+            let max = 255;
+            let min = 0;
+            let step = 1;
             let pointArray = [];
             let sideFlag = "";
             let targetPoint = targetColorU;
@@ -215,10 +219,6 @@ let totalVm: any = new Vue({
             colorUArray = pointArray;
 
             // part "V"
-            // V [-0.615, 0.615]、
-            max = 0.615;
-            min = -0.615;
-            step = (max - min) / (pointCount + 1);
             pointArray = [];
             sideFlag = "";
             targetPoint = targetColorV;
@@ -271,7 +271,7 @@ let totalVm: any = new Vue({
             for (let i = 0; i < pointCount; i++) {
                 let colorY = targetColorY;
                 let colorU = colorUArray[i];
-                let colorV = targetColorV;
+                let colorV = colorVArray[i];
                 console.log("[last for] i = ", i);
                 console.log("[last for] colorY = ", colorY);
                 console.log("[last for] colorU = ", colorU);
@@ -284,10 +284,7 @@ let totalVm: any = new Vue({
                 advisorColorArray.push(colorHEX);
             }
 
-            console.log("[generateAdvisor] targetColorRGB = ", targetColorRGB);
-            console.log("[generateAdvisor] targetColorY = ", targetColorY);
-            console.log("[generateAdvisor] targetColorU = ", targetColorU);
-            console.log("[generateAdvisor] targetColorV = ", targetColorV);
+    
             console.log("[generateAdvisor] advisorColorArray = ", advisorColorArray);
 
             this.targetRecommendColorList = advisorColorArray.filter((item) => {
