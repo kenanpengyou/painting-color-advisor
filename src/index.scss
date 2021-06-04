@@ -277,16 +277,17 @@ $advisor-width: $advisor-padding * 2+$card-width;
     }
 }
 
+.panel-title {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 14px;
+    font-weight: bold;
+}
+
 .advisor-target {
     margin: 0 -1*$advisor-padding;
     padding: 0 $advisor-padding $advisor-padding;
     border-bottom: 1px dashed $theme-color;
-    .target-title {
-        margin-bottom: 10px;
-        color: #333;
-        font-size: 14px;
-        font-weight: bold;
-    }
     .target-content {
         display: flex;
         justify-content: center;
@@ -302,16 +303,26 @@ $advisor-width: $advisor-padding * 2+$card-width;
     }
 }
 
+.advisor-control {
+    padding: $advisor-padding 0 0;
+    .hue-slider {
+        height: 24px;
+        background: linear-gradient(to right, #F00 0%, #FF0 16.66%, #0F0 33.33%, #0FF 50%, #00F 66.66%, #F0F 83.33%, #F00 100%);
+    }
+    .slider-picker {
+        width: 2px;
+        height: 100%;
+        border: 1px solid #777;
+        background-color: rgba(#fff, .9);
+        position: relative;
+        top: -1px;
+    }
+}
+
 .advisor-output {
     margin: 0 -1*$advisor-padding;
     padding: $advisor-padding;
     overflow: auto;
-    .output-title {
-        margin-bottom: 10px;
-        color: #333;
-        font-size: 14px;
-        font-weight: bold;
-    }
     .color-card {
         margin-bottom: 10px;
     }

@@ -61,6 +61,11 @@ let totalVm: any = new Vue({
             },
             mode: "normal"
         },
+        hue: {
+            sliderPickerStyle: {
+                left: 0
+            }
+        },
         lumaAdjust: false,
         pickerColor: "#ffffff",
         pickerIndicatorInverted: false,
@@ -155,7 +160,7 @@ let totalVm: any = new Vue({
             const [targetColorY, targetColorU, targetColorV]: number[] = helper.rgb2yuv(...targetColorRGB);
 
             const pointCount: number = this.advisorOptions.pointCount;
-            const rangePercent = this.advisorOptions.rangePercent;
+            const rangePercent: number = this.advisorOptions.rangePercent;
             let colorUArray: number[];
             let colorVArray: number[];
             let advisorColorArray: string[] = [];
@@ -165,131 +170,14 @@ let totalVm: any = new Vue({
             console.log("[generateAdvisor] targetColorU = ", targetColorU);
             console.log("[generateAdvisor] targetColorV = ", targetColorV);
 
-            // part "U"
-            let max = 255;
-            let min = 0;
-            let step = 1;
-            let pointArray = [];
-            let sideFlag = "";
-            let targetPoint = targetColorU;
-            let currentPoint = targetColorU;
-            let deltaLeft = 0;
-            let deltaRight = 0;
+            let huePackage = helper.generateHuePackage(targetColorY, targetColorU, targetColorV);
+            
+            console.log("huePackage = ", huePackage);
+            console.log("advisorColorArray = ", advisorColorArray);
 
-            for (let i = 1; i <= pointCount; i++) {
-                let deltaFlag = "";
-
-                if (sideFlag === "left") {
-                    deltaLeft = deltaLeft + 1;
-                    deltaFlag = "left";
-                } else if (sideFlag === "right") {
-                    deltaRight = deltaRight + 1;
-                    deltaFlag = "right";
-                } else {
-                    if (i % 2 === 0) {
-                        deltaLeft = deltaLeft + 1;
-                        deltaFlag = "left";
-                    } else {
-                        deltaRight = deltaRight + 1;
-                        deltaFlag = "right";
-                    }
-                }
-
-                if (deltaFlag === "right") {
-                    currentPoint = targetPoint + deltaRight * step;
-                } else if (deltaFlag === "left") {
-                    currentPoint = targetPoint - deltaLeft * step;
-                }
-
-                if (sideFlag === "") {
-                    if (currentPoint > max) {
-                        sideFlag = "left";
-                        deltaLeft = deltaLeft + 1;
-                        currentPoint = targetPoint - deltaLeft * step;
-                    } else if (currentPoint < min) {
-                        sideFlag = "right";
-                        deltaRight = deltaRight + 1;
-                        currentPoint = targetPoint + deltaRight * step;
-                    }
-                }
-
-                pointArray.push(currentPoint);
-            }
-
-            colorUArray = pointArray;
-
-            // part "V"
-            pointArray = [];
-            sideFlag = "";
-            targetPoint = targetColorV;
-            currentPoint = targetColorV;
-            deltaLeft = 0;
-            deltaRight = 0;
-
-            for (let i = 1; i <= pointCount; i++) {
-                let deltaFlag = "";
-
-                if (sideFlag === "left") {
-                    deltaLeft = deltaLeft + 1;
-                    deltaFlag = "left";
-                } else if (sideFlag === "right") {
-                    deltaRight = deltaRight + 1;
-                    deltaFlag = "right";
-                } else {
-                    if (i % 2 === 0) {
-                        deltaLeft = deltaLeft + 1;
-                        deltaFlag = "left";
-                    } else {
-                        deltaRight = deltaRight + 1;
-                        deltaFlag = "right";
-                    }
-                }
-
-                if (deltaFlag === "right") {
-                    currentPoint = targetPoint + deltaRight * step;
-                } else if (deltaFlag === "left") {
-                    currentPoint = targetPoint - deltaLeft * step;
-                }
-
-                if (sideFlag === "") {
-                    if (currentPoint > max) {
-                        sideFlag = "left";
-                        deltaLeft = deltaLeft + 1;
-                        currentPoint = targetPoint - deltaLeft * step;
-                    } else if (currentPoint < min) {
-                        sideFlag = "right";
-                        deltaRight = deltaRight + 1;
-                        currentPoint = targetPoint + deltaRight * step;
-                    }
-                }
-
-                pointArray.push(currentPoint);
-            }
-
-            colorVArray = pointArray;
-
-            for (let i = 0; i < pointCount; i++) {
-                let colorY = targetColorY;
-                let colorU = colorUArray[i];
-                let colorV = colorVArray[i];
-                console.log("[last for] i = ", i);
-                console.log("[last for] colorY = ", colorY);
-                console.log("[last for] colorU = ", colorU);
-                console.log("[last for] colorV = ", colorV);
-
-                let colorRGB = helper.yuv2rgb(colorY, colorU, colorV);
-                console.log("[last for] colorRGB = ", colorRGB);
-                let colorHEX = helper.rgb2hex(...colorRGB);
-
-                advisorColorArray.push(colorHEX);
-            }
-
-    
-            console.log("[generateAdvisor] advisorColorArray = ", advisorColorArray);
-
-            this.targetRecommendColorList = advisorColorArray.filter((item) => {
-                return /^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/.test(item);
-            });
+            // this.targetRecommendColorList = advisorColorArray.filter((item) => {
+            //     return /^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/.test(item);
+            // });
         },
         calcNoteInverted (color: string) {
             let contrastNumber: Number = contrastHex(color, baseConfig.cardNoteColor1);

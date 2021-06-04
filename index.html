@@ -41,7 +41,7 @@
             </div>
             <div v-on:mouseup.stop class="advisor-panel">
                 <div class="advisor-target">
-                    <div class="target-title">Target</div>
+                    <div class="target-title panel-title">Target</div>
                     <div class="target-content">
                         <div @click="copyToClipboard(targetColor)" class="color-card">
                             <em v-bind:style="targetCardStyle" class="card-main"></em>
@@ -49,8 +49,16 @@
                         </div>
                     </div>
                 </div>
+                <div class="advisor-control">
+                    <div class="control-title panel-title">Hue</div>
+                    <div class="control-content">
+                        <div class="hue-slider">
+                            <div class="slider-picker" :style="hue.pickerStyle"></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="advisor-output">
-                    <div class="output-title">Recommend</div>
+                    <div class="output-title panel-title">Recommend</div>
                     <div class="output-content">
                         <div @click="copyToClipboard(item)" v-bind:key="$index" v-for="(item, $index) in targetRecommendColorList" class="color-card">
                             <em v-bind:style="{backgroundColor: item}" class="card-main"></em>
