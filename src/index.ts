@@ -62,7 +62,8 @@ let totalVm: any = new Vue({
             mode: "normal"
         },
         hue: {
-            sliderPickerStyle: {
+            current: 0,
+            pickerStyle: {
                 left: 0
             }
         },
@@ -119,6 +120,28 @@ let totalVm: any = new Vue({
         handleMagnifierEnter (e: MouseEvent) {
             // this.magnifierRightBottom = !this.magnifierRightBottom;
         },
+        handleHueSliderMousedown (e: MouseEvent) {
+            let hueSliderEl: HTMLElement = this.$refs.hueSlider;
+            let sliderWidth: number = hueSliderEl.offsetWidth;
+            let sliderPickerEl: HTMLElement = this.$refs.sliderPicker;
+            let pickerWidth: number = sliderPickerEl.offsetWidth;
+            let clientX: number = e.clientX;
+            let clientY: number = e.clientY;
+            let hueSliderStartX: number = hueSliderEl.getBoundingClientRect().left;
+            let rangeWidth: number = sliderWidth - pickerWidth;
+            let posX: number = helper.clamp(Math.round(clientX - hueSliderStartX), 0, rangeWidth);
+            let targetHue: number = Math.round(posX / rangeWidth * 359);
+
+            console.log("[handleHueSliderMousedown] targetHue = ", targetHue);
+            console.log("[handleHueSliderMousedown] posX = ", posX);
+
+            this.hue.current = targetHue;
+            this.hue.pickerStyle.left = posX + "px";
+
+            if (this.targetColor) {
+                this.generateAdvisor();
+            }
+        },
         showToastTop (message: string) {
             let toastTop = this.toastTop;
             let toastTopEl = this.$refs.toastTopEl;
@@ -159,10 +182,8 @@ let totalVm: any = new Vue({
             
             const [targetColorY, targetColorU, targetColorV]: number[] = helper.rgb2yuv(...targetColorRGB);
 
-            const pointCount: number = this.advisorOptions.pointCount;
+            let pointCount: number = this.advisorOptions.pointCount;
             const rangePercent: number = this.advisorOptions.rangePercent;
-            let colorUArray: number[];
-            let colorVArray: number[];
             let advisorColorArray: string[] = [];
 
             console.log("[generateAdvisor] targetColorRGB = ", targetColorRGB);
@@ -172,12 +193,69 @@ let totalVm: any = new Vue({
 
             let huePackage = helper.generateHuePackage(targetColorY, targetColorU, targetColorV);
             
-            console.log("huePackage = ", huePackage);
-            console.log("advisorColorArray = ", advisorColorArray);
+            let maxIndex = 359;
+            let minIndex = 0;
+            let pointArray = [];
+            let sideFlag = "";
+            let startIndex = this.hue.current;
+            let currentIndex = startIndex;
+            let deltaLeft = 0;
+            let deltaRight = 0;
 
-            // this.targetRecommendColorList = advisorColorArray.filter((item) => {
-            //     return /^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/.test(item);
-            // });
+            for (let i = 1; i <= pointCount; i++) {
+                let deltaFlag = "";
+
+                if (sideFlag === "left") {
+                    deltaLeft = deltaLeft + 1;
+                    deltaFlag = "left";
+                } else if (sideFlag === "right") {
+                    deltaRight = deltaRight + 1;
+                    deltaFlag = "right";
+                } else {
+                    if (i % 2 === 0) {
+                        deltaLeft = deltaLeft + 1;
+                        deltaFlag = "left";
+                    } else {
+                        deltaRight = deltaRight + 1;
+                        deltaFlag = "right";
+                    }
+                }
+
+                if (deltaFlag === "right") {
+                    currentIndex = startIndex + deltaRight;
+                } else if (deltaFlag === "left") {
+                    currentIndex = startIndex - deltaLeft;
+                }
+
+                if (sideFlag === "") {
+                    if (currentIndex > maxIndex) {
+                        sideFlag = "left";
+                        deltaLeft = deltaLeft + 1;
+                        currentIndex = startIndex - deltaLeft;
+                    } else if (currentIndex < minIndex) {
+                        sideFlag = "right";
+                        deltaRight = deltaRight + 1;
+                        currentIndex = startIndex + deltaRight;
+                    }
+                }
+
+                let colorPoint = huePackage.dataArray[currentIndex];
+                
+                if (colorPoint) {
+                    pointArray.push(colorPoint);
+                } else {
+                    pointCount = pointCount + 1;
+                }
+            }
+
+            pointArray.map(colorPoint => {
+                let colorRGB = helper.yuv2rgb(targetColorY, colorPoint.u, colorPoint.v);
+                let colorHEX = helper.rgb2hex(...colorRGB);
+                advisorColorArray.push(colorHEX);
+            });
+
+            console.log("[done] advisorColorArray = ", advisorColorArray);
+            this.targetRecommendColorList = advisorColorArray;
         },
         calcNoteInverted (color: string) {
             let contrastNumber: Number = contrastHex(color, baseConfig.cardNoteColor1);

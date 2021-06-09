@@ -39,7 +39,7 @@
             <div class="switch-panel" v-bind:class="painting.classObject['-centered'] ? '' : '-scrollOffset'">
                 <div class="switcher -luma" v-bind:class="lumaAdjust ? '-active' : ''" v-on:mouseup.stop v-on:click="switchDisplay('luma')" title="切换素描关系明度显示"></div>
             </div>
-            <div v-on:mouseup.stop class="advisor-panel">
+            <div v-on:mouseup.stop v-on:mousedown.stop class="advisor-panel">
                 <div class="advisor-target">
                     <div class="target-title panel-title">Target</div>
                     <div class="target-content">
@@ -52,8 +52,8 @@
                 <div class="advisor-control">
                     <div class="control-title panel-title">Hue</div>
                     <div class="control-content">
-                        <div class="hue-slider">
-                            <div class="slider-picker" :style="hue.pickerStyle"></div>
+                        <div ref="hueSlider" class="hue-slider" v-on:mousedown="handleHueSliderMousedown">
+                            <div ref="sliderPicker" class="slider-picker" v-bind:style="hue.pickerStyle"></div>
                         </div>
                     </div>
                 </div>

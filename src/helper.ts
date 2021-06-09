@@ -1,5 +1,5 @@
 // https://developer.mozilla.org/zh-CN/docs/Web/API/Window/resize_event
-let throttle: Function = function (type: string, name: string, obj: HTMLElement | Window): void {
+let throttle = function (type: string, name: string, obj: HTMLElement | Window): void {
     obj = obj || window;
     let running: boolean = false;
     let func: EventListener = function () {
@@ -16,7 +16,7 @@ let throttle: Function = function (type: string, name: string, obj: HTMLElement 
 };
 
 // r, g, b should be "int"
-const rgb2hex: Function = function (r: any, g: any, b: any): string {
+const rgb2hex = function (r: any, g: any, b: any): string {
     r = r.toString(16);
     g = g.toString(16);
     b = b.toString(16);
@@ -31,7 +31,7 @@ const rgb2hex: Function = function (r: any, g: any, b: any): string {
     return "#" + r + g + b;
 };
 
-const hex2rgb: Function = function (hex: string): number[] {
+const hex2rgb = function (hex: string): number[] {
     let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
     hex = hex.replace(shorthandRegex, function (m, r, g, b) {
         return r + r + g + g + b + b;
@@ -45,7 +45,7 @@ const hex2rgb: Function = function (hex: string): number[] {
 
 // https://en.wikipedia.org/wiki/YUV
 // use YUV444 and RGB888
-const rgb2yuv: Function = function (r: number, g: number, b: number): number[] {
+const rgb2yuv = function (r: number, g: number, b: number): number[] {
     let y = ((66 * r + 129 * g + 25 * b + 128) >> 8) + 16;
     let u = ((-38 * r - 74 * g + 128 * b + 128) >> 8) + 128;
     let v = ((112 * r - 94 * g - 18 * b + 128) >> 8) + 128;
@@ -53,7 +53,7 @@ const rgb2yuv: Function = function (r: number, g: number, b: number): number[] {
     return [y, u, v];
 };
 
-const yuv2rgb: Function = function (y: number, u: number, v: number): number[] {
+const yuv2rgb = function (y: number, u: number, v: number): number[] {
     
     let c = y - 16;
     let d = u - 128;
@@ -70,11 +70,11 @@ const yuv2rgb: Function = function (y: number, u: number, v: number): number[] {
     return [r, g, b];
 };
 
-const clamp: Function = function (current: number, min: number, max: number): number {
+const clamp = function (current: number, min: number, max: number): number {
     return Math.min(Math.max(current, min), max);
 };
 
-const generateHuePackage: Function = function (y: number, u: number, v: number): {
+const generateHuePackage = function (y: number, u: number, v: number): {
     closest: number,
     dataArray: {
         u: number,
@@ -125,7 +125,7 @@ const generateHuePackage: Function = function (y: number, u: number, v: number):
     }
 };
 
-const calcHueOfRGB: Function = function (r: number, g: number, b: number) {
+const calcHueOfRGB = function (r: number, g: number, b: number) {
     r /= 255;
     g /= 255;
     b /= 255;
@@ -157,5 +157,6 @@ export default {
     hex2rgb,
     rgb2yuv,
     yuv2rgb,
+    clamp,
     generateHuePackage
 };
