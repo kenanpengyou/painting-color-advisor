@@ -1,4 +1,7 @@
 $theme-color: #78767a;
+$shape-color-1: #b5b1a5;
+$shape-color-2: #635f53;
+$shape-color-3: #49453f;
 $indicator-color-1: #1ee;
 $indicator-color-2: #f00;
 $card-note-color-1: #333;
@@ -46,21 +49,25 @@ body {
     align-items: center;
     width: 40%;
     height: 30%;
-    border: 3px dashed #ccc;
+    border: 4px dashed $shape-color-1;
     box-sizing: border-box;
     min-width: 200px;
     min-height: 125px;
     max-width: 400px;
     max-height: 250px;
     &.-active {
-        border-color: #f56161;
+        border-color: $shape-color-2;
     }
 }
 
 .box-note {
-    color: #777;
+    padding: 10px 30px;
+    border-radius: 5px;
+    background: $shape-color-3;
+    color: $shape-color-1;
     font-size: 14px;
     font-style: normal;
+    text-align: center;
     cursor: default;
 }
 

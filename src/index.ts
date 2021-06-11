@@ -25,6 +25,7 @@ let paintingCtx: CanvasRenderingContext2D;
 let magnifierCtx: CanvasRenderingContext2D;
 let grabControl: GrabControl;
 let pickerControl: PickerControl;
+let pasteEventHandler: EventListener;
 
 let totalVm: any = new Vue({
     el: "[data-total-container]",
@@ -355,33 +356,60 @@ let totalVm: any = new Vue({
                     this.painting.mode = "normal";
             }
         },
-        handleDragEnter () {
-            this.dropBoxClass["-active"] = true;
+        handleDragEnter (e: DragEvent) {
+            console.log("[handleDragEnter] e.target = ", e.target);
+            console.log("[handleDragEnter] e.relatedTarget = ", e.relatedTarget);
+            if (!this.$refs.dropBox.contains(e.relatedTarget)) {
+                this.dropBoxClass["-active"] = true;
+            }
         },
-        handleDragLeave () {
-            this.dropBoxClass["-active"] = false;
+        handleDragLeave (e: DragEvent) {
+            console.log("[handleDragLeave] e.target = ", e.target);
+            console.log("[handleDragLeave] e.relatedTarget = ", e.relatedTarget);
+            if (!this.$refs.dropBox.contains(e.relatedTarget)) {
+                this.dropBoxClass["-active"] = false;
+            }
         },
         handleDrop (e: DragEvent) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            let dt = e.dataTransfer;
-            let files = dt.files;
-
-            console.log("[handleDrop] dt = ", dt);
-            console.log("[handleDrop] files = ", files);
-     
+            let dt: DataTransfer = e.dataTransfer;
             this.dropBoxClass["-active"] = false;
+            LoadImageFromItemList(dt.items);
         }
     }
 });
 
+function LoadImageFromItemList (items: DataTransferItemList): void {
+    if (items && items.length > 0) {
+                
+        for (let i = 0; i < items.length; i++) {
+            let item: DataTransferItem = items[i];
+
+            if (item.type.includes("image")) {
+                let blob: Blob = item.getAsFile();
+                return loadImageBlobToCanvas(blob);
+            }
+        }
+    }
+}
+
 function bindEvents (flag: string): void {
+    pasteEventHandler = pasteEventHandler || function (e: ClipboardEvent) {
+        e.preventDefault();
+        let clipboardData: DataTransfer = e.clipboardData;
     
+        if (clipboardData) {
+            LoadImageFromItemList(clipboardData.items);
+        }
+    };
+
     switch (flag) {
 
         // when the image has been loaded to canvas
         case "imageReady": {
+
+            // remove event listener of "paste" after finding a image
+            console.log("[imageReady]");
+            document.removeEventListener("paste", pasteEventHandler, false);
             helper.throttle("resize", "optimizedResize", window);
 
             window.addEventListener("optimizedResize", () => {
@@ -399,29 +427,7 @@ function bindEvents (flag: string): void {
 
         case "init":
         default: {
-            document.addEventListener("paste", function pasteEventHandler (e: ClipboardEvent) {
-                e.preventDefault();
-                let clipboardData: DataTransfer = e.clipboardData;
-            
-                if (clipboardData) {
-                    let items: DataTransferItemList = clipboardData.items;
-            
-                    if (items && items.length > 0) {
-                        
-                        for (let i = 0; i < items.length; i++) {
-                            let item: DataTransferItem = items[i];
-            
-                            if (item.type.includes("image")) {
-                                let blob: Blob = item.getAsFile();
-
-                                // remove event listener of "paste" after finding a image
-                                document.removeEventListener("paste", pasteEventHandler, false);
-                                return loadImageBlobToCanvas(blob);
-                            }
-                        }
-                    }
-                }
-            }, false);
+            document.addEventListener("paste", pasteEventHandler, false);
         }
     }
 }
